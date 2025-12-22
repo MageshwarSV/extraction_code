@@ -1,0 +1,17 @@
+[INFO] Starting Data Transformation API on 0.0.0.0:30019
+[INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:30019
+ * Running on http://192.168.0.16:30019
+[INFO] [33mPress CTRL+C to quit[0m
+[INFO] Loaded 30 transformation rules for 3 fields
+[INFO] Reloading transformation rules...
+[INFO] Started DB LISTEN for transformations_updated notifications
+[INFO] Loaded 30 transformation rules for 3 fields
+[INFO] [transformations-marker] Touched update marker file: C:\Users\avin4\Desktop\.transformations_updated (prev_mtime=1763792351.4052799, new_mtime=1763792351.4073923)
+[INFO] [transformations] Invalidated transformer singleton; next get_transformer() will recreate it
+[INFO] [uvicorn-reload] Touched reload trigger file: C:\Users\avin4\Desktop\.uvicorn_reload_trigger (post_mtime=1763792351.4095557)
+[INFO] [uvicorn-reload] Touched reload trigger file: C:\Users\avin4\Desktop\.uvicorn_reload_trigger (post_mtime=1763792351.4095557)
+[INFO] [uvicorn-reload] Touched reload trigger file: C:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\engine\extractors\data_transformation.py (post_mtime=1763792351.4095557)
+[INFO] 127.0.0.1 - - [22/Nov/2025 11:49:11] "[35m[1mPOST /api/transformations HTTP/1.1[0m" 201 -
+[INFO] 127.0.0.1 - - [22/Nov/2025 11:49:41] "GET /api/transformations/field/Consignee HTTP/1.1" 200 -

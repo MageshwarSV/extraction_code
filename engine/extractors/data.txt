@@ -1,0 +1,766 @@
+"""
+Data Transformation Module
+Transforms extracted invoice data based on mapping rules from database
+Includes Flask API for managing transformation rules
+"""
+import logging
+from typing import Dict, Any, Optional, List
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from datetime import datetime
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
+logger = logging.getLogger(__name__)
+
+# Database configuration
+DB_CONFIG = {
+    "dbname": "mydb",
+    "user": "sql_developer",
+    "password": "Dev@123",
+    "host": "103.14.123.44",
+    "port": 5432,
+}
+
+class DataTransformer:
+    """Handles data transformation based on database mapping rules"""
+    
+    def __init__(self, db_config: Dict[str, Any] = None):
+        """Initialize with database configuration"""
+        self.db_config = db_config or DB_CONFIG
+        self._transformation_cache = None
+        self._load_transformations()
+    
+    def _load_transformations(self) -> None:
+        """Load transformation mappings from database"""
+        try:
+            conn = psycopg2.connect(**self.db_config)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            # Query to get all transformation rules
+            query = """
+                SELECT field_name, from_value, to_value 
+                FROM data_transformation 
+                ORDER BY field_name, from_value
+            """
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            
+            # Build cache: {field_name: {from_value: to_value}}
+            self._transformation_cache = {}
+            for row in rows:
+                field_name = row['field_name']
+                from_value = row['from_value']
+                to_value = row['to_value']
+                
+                if field_name not in self._transformation_cache:
+                    self._transformation_cache[field_name] = {}
+                
+                self._transformation_cache[field_name][from_value] = to_value
+            
+            cursor.close()
+            conn.close()
+            
+            logger.info(f"Loaded {len(rows)} transformation rules for {len(self._transformation_cache)} fields")
+            
+        except Exception as e:
+            logger.error(f"Failed to load transformations from database: {e}")
+            self._transformation_cache = {}
+    
+    def transform_value(self, field_name: str, value: Any) -> tuple[Any, bool]:
+        """
+        Transform a single field value based on mapping rules
+        
+        Args:
+            field_name: Name of the field (e.g., 'Vehicle', 'Destination', 'Consignee')
+            value: Original extracted value
+        
+        Returns:
+            tuple: (transformed_value, was_changed)
+        """
+        if not value or not isinstance(value, str):
+            return value, False
+        
+        # Check if we have transformations for this field
+        if field_name not in self._transformation_cache:
+            return value, False
+        
+        # Check if this value needs transformation
+        field_mappings = self._transformation_cache[field_name]
+        if value in field_mappings:
+            transformed = field_mappings[value]
+            logger.info(f"Transformed {field_name}: '{value}' -> '{transformed}'")
+            return transformed, True
+        
+        return value, False
+    
+    def transform_data(self, extracted_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Transform all applicable fields in extracted data
+        
+        Args:
+            extracted_data: Dictionary of extracted invoice data
+        
+        Returns:
+            Dictionary with transformed data and metadata about changes
+        """
+        if not extracted_data:
+            return {
+                "data": extracted_data,
+                "transformed": False,
+                "changes": []
+            }
+        
+        transformed_data = extracted_data.copy()
+        changes = []
+        
+        # Fields that can be transformed based on your CSV
+        transformable_fields = [
+            "Vehicle", "vehicle_number", "vehicle",
+            "Destination", "destination",
+            "Consignee", "consignee", "consignee_name"
+        ]
+        
+        for field in transformable_fields:
+            if field in transformed_data:
+                original_value = transformed_data[field]
+                
+                # Try transformation with exact field name first
+                transformed_value, changed = self.transform_value(field, original_value)
+                
+                # If not found, try with capitalized version
+                if not changed and field.lower() != field:
+                    transformed_value, changed = self.transform_value(
+                        field.capitalize(), 
+                        original_value
+                    )
+                
+                if changed:
+                    transformed_data[field] = transformed_value
+                    changes.append({
+                        "field": field,
+                        "from": original_value,
+                        "to": transformed_value
+                    })
+        
+        result = {
+            "data": transformed_data,
+            "transformed": len(changes) > 0,
+            "changes": changes
+        }
+        
+        if changes:
+            logger.info(f"Data transformation complete: {len(changes)} field(s) changed")
+        else:
+            logger.info("No data transformations needed")
+        
+        return result
+    
+    def reload_transformations(self) -> None:
+        """Reload transformation rules from database (useful if mappings are updated)"""
+        logger.info("Reloading transformation rules...")
+        self._load_transformations()
+
+
+# Singleton instance for easy import
+_transformer_instance = None
+
+def get_transformer() -> DataTransformer:
+    """Get or create the singleton DataTransformer instance"""
+    global _transformer_instance
+    if _transformer_instance is None:
+        _transformer_instance = DataTransformer()
+    return _transformer_instance
+
+
+def transform_extracted_data(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Convenience function to transform extracted data
+    
+    Args:
+        extracted_data: Dictionary of extracted invoice data
+    
+    Returns:
+        Dictionary with transformed data and metadata
+    """
+    transformer = get_transformer()
+    return transformer.transform_data(extracted_data)
+
+
+# ============================================
+# Flask API for Transformation Management
+# ============================================
+
+app = Flask(__name__)
+CORS(app)  # Enable CORS for frontend access
+
+
+@app.route('/api/transformations', methods=['GET'])
+def get_all_transformations():
+    """
+    Get all transformation rules from database
+    
+    Returns:
+        JSON array of all transformation rules
+    """
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT id, field_name, from_value, to_value, created_at, updated_at
+            FROM data_transformation
+            ORDER BY field_name, from_value
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        # Convert datetime objects to strings
+        result = []
+        for row in rows:
+            result.append({
+                'id': row['id'],
+                'field_name': row['field_name'],
+                'from_value': row['from_value'],
+                'to_value': row['to_value'],
+                'created_at': row['created_at'].isoformat() if row['created_at'] else None,
+                'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
+            })
+        
+        return jsonify({
+            'success': True,
+            'data': result,
+            'count': len(result)
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch transformations: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/transformations/<int:transformation_id>', methods=['GET'])
+def get_transformation(transformation_id):
+    """
+    Get a single transformation rule by ID
+    
+    Args:
+        transformation_id: ID of the transformation rule
+    
+    Returns:
+        JSON object of the transformation rule
+    """
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT id, field_name, from_value, to_value, created_at, updated_at
+            FROM data_transformation
+            WHERE id = %s
+        """
+        cursor.execute(query, (transformation_id,))
+        row = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if not row:
+            return jsonify({
+                'success': False,
+                'error': 'Transformation not found'
+            }), 404
+        
+        result = {
+            'id': row['id'],
+            'field_name': row['field_name'],
+            'from_value': row['from_value'],
+            'to_value': row['to_value'],
+            'created_at': row['created_at'].isoformat() if row['created_at'] else None,
+            'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': result
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch transformation: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/transformations/field/<field_name>', methods=['GET'])
+def get_transformations_by_field(field_name):
+    """
+    Get all transformation rules for a specific field
+    
+    Args:
+        field_name: Name of the field (e.g., 'Vehicle', 'Destination', 'Consignee')
+    
+    Returns:
+        JSON array of transformation rules for the field
+    """
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT id, field_name, from_value, to_value, created_at, updated_at
+            FROM data_transformation
+            WHERE field_name = %s
+            ORDER BY from_value
+        """
+        cursor.execute(query, (field_name,))
+        rows = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        result = []
+        for row in rows:
+            result.append({
+                'id': row['id'],
+                'field_name': row['field_name'],
+                'from_value': row['from_value'],
+                'to_value': row['to_value'],
+                'created_at': row['created_at'].isoformat() if row['created_at'] else None,
+                'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
+            })
+        
+        return jsonify({
+            'success': True,
+            'data': result,
+            'count': len(result)
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch transformations by field: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/transformations', methods=['POST'])
+def create_transformation():
+    """
+    Create a new transformation rule
+    
+    Request Body:
+        {
+            "field_name": "Vehicle",
+            "from_value": "TN12AB3456",
+            "to_value": "TN34CD7890"
+        }
+    
+    Returns:
+        JSON object with created transformation
+    """
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({
+                'success': False,
+                'error': 'Request body is required'
+            }), 400
+        
+        field_name = data.get('field_name')
+        from_value = data.get('from_value')
+        to_value = data.get('to_value')
+        
+        if not all([field_name, from_value, to_value]):
+            return jsonify({
+                'success': False,
+                'error': 'field_name, from_value, and to_value are required'
+            }), 400
+        
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            INSERT INTO data_transformation (field_name, from_value, to_value, created_at, updated_at)
+            VALUES (%s, %s, %s, NOW(), NOW())
+            RETURNING id, field_name, from_value, to_value, created_at, updated_at
+        """
+        cursor.execute(query, (field_name, from_value, to_value))
+        row = cursor.fetchone()
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        # Reload transformations in memory
+        get_transformer().reload_transformations()
+        
+        result = {
+            'id': row['id'],
+            'field_name': row['field_name'],
+            'from_value': row['from_value'],
+            'to_value': row['to_value'],
+            'created_at': row['created_at'].isoformat() if row['created_at'] else None,
+            'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': result,
+            'message': 'Transformation created successfully'
+        }), 201
+        
+    except Exception as e:
+        logger.error(f"Failed to create transformation: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/transformations/<int:transformation_id>', methods=['PUT'])
+def update_transformation(transformation_id):
+    """
+    Update an existing transformation rule
+    
+    Args:
+        transformation_id: ID of the transformation to update
+    
+    Request Body:
+        {
+            "field_name": "Vehicle",
+            "from_value": "TN12AB3456",
+            "to_value": "TN34CD7890"
+        }
+    
+    Returns:
+        JSON object with updated transformation
+    """
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({
+                'success': False,
+                'error': 'Request body is required'
+            }), 400
+        
+        field_name = data.get('field_name')
+        from_value = data.get('from_value')
+        to_value = data.get('to_value')
+        
+        if not all([field_name, from_value, to_value]):
+            return jsonify({
+                'success': False,
+                'error': 'field_name, from_value, and to_value are required'
+            }), 400
+        
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            UPDATE data_transformation
+            SET field_name = %s, from_value = %s, to_value = %s, updated_at = NOW()
+            WHERE id = %s
+            RETURNING id, field_name, from_value, to_value, created_at, updated_at
+        """
+        cursor.execute(query, (field_name, from_value, to_value, transformation_id))
+        row = cursor.fetchone()
+        
+        if not row:
+            cursor.close()
+            conn.close()
+            return jsonify({
+                'success': False,
+                'error': 'Transformation not found'
+            }), 404
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        # Reload transformations in memory
+        get_transformer().reload_transformations()
+        
+        result = {
+            'id': row['id'],
+            'field_name': row['field_name'],
+            'from_value': row['from_value'],
+            'to_value': row['to_value'],
+            'created_at': row['created_at'].isoformat() if row['created_at'] else None,
+            'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': result,
+            'message': 'Transformation updated successfully'
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to update transformation: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/transformations/<int:transformation_id>', methods=['DELETE'])
+def delete_transformation(transformation_id):
+    """
+    Delete a transformation rule
+    
+    Args:
+        transformation_id: ID of the transformation to delete
+    
+    Returns:
+        JSON success message
+    """
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        
+        query = "DELETE FROM data_transformation WHERE id = %s RETURNING id"
+        cursor.execute(query, (transformation_id,))
+        row = cursor.fetchone()
+        
+        if not row:
+            cursor.close()
+            conn.close()
+            return jsonify({
+                'success': False,
+                'error': 'Transformation not found'
+            }), 404
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        # Reload transformations in memory
+        get_transformer().reload_transformations()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Transformation deleted successfully'
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to delete transformation: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/transformations/reload', methods=['POST'])
+def reload_cache():
+    """
+    Reload transformation cache from database
+    
+    Returns:
+        JSON success message with count of loaded transformations
+    """
+    try:
+        transformer = get_transformer()
+        transformer.reload_transformations()
+        
+        count = sum(len(mappings) for mappings in transformer._transformation_cache.values())
+        
+        return jsonify({
+            'success': True,
+            'message': 'Transformation cache reloaded successfully',
+            'count': count
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to reload cache: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/transformations/stats', methods=['GET'])
+def get_stats():
+    """
+    Get statistics about transformations
+    
+    Returns:
+        JSON object with statistics
+    """
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get total count
+        cursor.execute("SELECT COUNT(*) as total FROM data_transformation")
+        total = cursor.fetchone()['total']
+        
+        # Get count by field
+        cursor.execute("""
+            SELECT field_name, COUNT(*) as count
+            FROM data_transformation
+            GROUP BY field_name
+            ORDER BY field_name
+        """)
+        by_field = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total': total,
+                'by_field': [{'field': row['field_name'], 'count': row['count']} for row in by_field]
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Failed to get stats: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """
+    Health check endpoint
+    
+    Returns:
+        JSON object with service status
+    """
+    try:
+        # Test database connection
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'status': 'healthy',
+            'database': 'connected'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'status': 'unhealthy',
+            'database': 'disconnected',
+            'error': str(e)
+        }), 500
+
+
+def run_api(host='0.0.0.0', port=30019, debug=False):
+    """
+    Run the Flask API server
+    
+    Args:
+        host: Host address (default: 0.0.0.0 for all interfaces)
+        port: Port number (default: 30019)
+        debug: Enable debug mode (default: False)
+    """
+    logger.info(f"Starting Data Transformation API on {host}:{port}")
+    app.run(host=host, port=port, debug=debug)
+
+
+if __name__ == "__main__":
+    import argparse
+    
+    # Setup argument parser
+    parser = argparse.ArgumentParser(description="Data Transformation Module")
+    parser.add_argument(
+        '--api',
+        action='store_true',
+        help='Run Flask API server'
+    )
+    parser.add_argument(
+        '--host',
+        default='0.0.0.0',
+        help='API host address (default: 0.0.0.0)'
+    )
+    parser.add_argument(
+        '--port',
+        type=int,
+        default=30019,
+        help='API port number (default: 30019)'
+    )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable debug mode for API'
+    )
+    
+    args = parser.parse_args()
+    
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='[%(levelname)s] %(message)s'
+    )
+    
+    if args.api:
+        # Run Flask API
+        print("=" * 60)
+        print("DATA TRANSFORMATION API SERVER")
+        print("=" * 60)
+        print(f"Starting API on http://{args.host}:{args.port}")
+        print("\nAvailable endpoints:")
+        print("  GET    /api/transformations              - Get all transformations")
+        print("  GET    /api/transformations/<id>         - Get transformation by ID")
+        print("  GET    /api/transformations/field/<name> - Get by field name")
+        print("  POST   /api/transformations              - Create new transformation")
+        print("  PUT    /api/transformations/<id>         - Update transformation")
+        print("  DELETE /api/transformations/<id>         - Delete transformation")
+        print("  POST   /api/transformations/reload       - Reload cache")
+        print("  GET    /api/transformations/stats        - Get statistics")
+        print("  GET    /api/health                       - Health check")
+        print("\n" + "=" * 60)
+        
+        run_api(host=args.host, port=args.port, debug=args.debug)
+    else:
+        # Test the transformer
+        print("=" * 60)
+        print("DATA TRANSFORMATION TEST")
+        print("=" * 60)
+        
+        # Test data
+        test_data = {
+            "Vehicle": "TN73BZ7332",
+            "Destination": "ARAKONAM",
+            "Consignee": "K.S. TRADERS",
+            "other_field": "some value"
+        }
+        
+        print("\nOriginal data:")
+        print(test_data)
+        print("\nTransforming...")
+        
+        result = transform_extracted_data(test_data)
+        
+        print("\nTransformed data:")
+        print(result["data"])
+        print(f"\nWas transformed: {result['transformed']}")
+        print(f"Changes made: {len(result['changes'])}")
+        
+        if result['changes']:
+            print("\nChanges:")
+            for change in result['changes']:
+                print(f"  {change['field']}: '{change['from']}' -> '{change['to']}'")
+        
+        print("\n" + "=" * 60)
+        print("TIP: Run with --api flag to start the API server")
+        print("Example: python data_transformation.py --api --port 5001")
+        print("=" * 60)
+

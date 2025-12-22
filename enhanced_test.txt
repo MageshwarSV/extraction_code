@@ -1,0 +1,262 @@
+﻿python : [INFO] 
+\u2713 Using 
+Tesseract: C:\Tessera
+ct-OCR\tesseract.EXE
+At line:1 char:1
++ python 
+test_enhanced.py 
+2>&1 | Out-File 
+-Encoding utf8 
+enhanced_test. ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: ([INFO]    
+ \u2713 U...R\tes    
+seract.EXE:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+[INFO] \u2713 Using 
+Poppler: C:\poppler-2
+5.07.0\Library\bin
+[INFO] ==============
+=====================
+=====================
+====
+[INFO] PASS 1: 
+Tesseract OCR @ DPI 
+600 (All fields 
+except Delivery 
+Address)
+[INFO] ==============
+=====================
+=====================
+====
+[INFO] \u2713 
+Rendered 1 page(s) 
+from PDF in 1.54 
+seconds
+[INFO]   Processing 
+page 1...
+[INFO]   \u2713 Page 
+1 OCR finished in 
+34.89 seconds
+[INFO] \u2713 OCR 
+completed. Total 
+text length: 20286 
+characters (Time: 
+36.43 seconds)
+[INFO] 
+Extracting fields 
+from OCR text...
+[INFO]   Invoice No: 
+6978028956
+[INFO]   Invoice 
+Date: 04.10.2025
+[INFO]   L.R. No: 
+6651
+[INFO]   Consignee: 
+| TPL LAV VOZ CPRR 
+JOINT VENTUR
+[INFO]   Consignor: 
+UltraTech Cement 
+Limited
+[INFO] [WEIGHT] 
+Found via priority 
+pattern: 39.740
+[INFO]   Weight: 
+39.740 (method: 
+quantity_priority)
+[INFO]   Content 
+Name: OPC53
+[INFO]   Rate: 499.00
+[INFO]   Despatch 
+City: ARAKONAM
+[INFO]   
+Destination: CHENNAI
+[INFO]   E-Way Bill 
+No: 521887139026
+[INFO]   E-Way Bill 
+Expiry: 05-10-2025 
+23:59:00
+[INFO]   Vehicle No: 
+NOT FOUND
+[INFO]   IRN: 4620970
+c0d8331cc59149ce6d1
+[INFO]   Driver 
+Mobile: 8996758983
+[INFO]   Goods Type: 
+BAG
+[INFO] \u2713 Field 
+extraction finished 
+in 0.05 seconds
+[INFO] 
+=====================
+=====================
+==================
+[INFO] PASS 2: 
+PaddleOCR Focused 
+Scan (Delivery 
+Address Only)
+[INFO] ==============
+=====================
+=====================
+====
+[INFO] Calling extrac
+t_delivery_address_v2
+()...
+[INFO]   Input PDF: c
+:\Users\avin4\Desktop
+\boostentryai ui code
+\1234567890120.pdf
+[INFO]   Target DPI: 
+600
+[INFO] PDF render: 
+pages=1 in 1.58s
+[INFO] Processing 
+page 1/1 (right-box 
+extraction)
+[INFO] Header-based 
+RIGHT crop: x1=2396 
+y1=1372 x2=4893 
+y2=2046 
+header=recipient 
+(11.50s)
+[INFO] Header-based 
+crop phase: 11.50s
+[INFO] Contour-based 
+crop phase: 11.50s
+[INFO] Saved crop 
+image: C:\Users\avin4
+\Desktop\wbai_doc_ext
+ractor_engine-main\cr
+op\crop_raw_p1_176640
+1577824.png
+[INFO] Detected skew 
+angle: -1.00░
+[INFO] Alignment 
+corrected by -1.00░ 
+(0.1051s)
+[INFO] Alignment 
+correction phase: 
+11.68s
+[INFO] Preprocess 
+phase: 13.37s
+[INFO] Saved crop 
+image: C:\Users\avin4
+\Desktop\wbai_doc_ext
+ractor_engine-main\cr
+op\crop_preproc_p1_17
+66401579694.png
+[INFO] Harvest 
+lines: n=10 (0.33s)
+[INFO] Harvest(prepro
+cessed) phase: 10 
+lines
+[INFO] Harvest(raw) 
+phase: 10 lines
+[INFO] Filter+dedupe 
+phase: kept=10
+[INFO] Image-based 
+reorder phase 
+complete
+[INFO] Starting 
+letter-wise merge 
+verification...
+[INFO] _merge_adjacen
+t_tokens_using_image 
+complete
+[INFO] Calling AI to 
+format the cleaned 
+address (blocking)...
+[INFO] AI returned: 
+Name &, 5 Cprr Joint 
+Ventur, Tpl Iav Voz, 
+Cprr Projects 7kms, 
+(t0311 Kattur 
+Roadchennai, Minjur, 
+No: 403, A 
+Chennaichennai, 
+Code: 33, Omer 
+State: Tamil Nadu 
+State
+[INFO] Page 1 
+complete: 
+page_time=17.78s 
+total_elapsed=19.35s
+[INFO] Extracted 
+right_box with 10 
+lines on page 1
+[INFO] PASS-2 total 
+so far: 19.35s
+[INFO] \u2713 
+Delivery Address 
+extracted in 19.36 
+seconds
+[INFO]   Result: 5 
+Cprr Joint Ventur, 
+Tpl Iav Voz, Cprr 
+Projects 7kms, 
+(t0311 Kattur 
+Roadchennai, Minjur, 
+No: 403, A ...
+[INFO] 
+=====================
+=====================
+==================
+[INFO] EXTRACTION 
+COMPLETE in 56.06 
+seconds
+[INFO] ==============
+=====================
+=====================
+====
+[INFO] Fields 
+extracted: 21/22
+Running enhanced extraction...
+
+============================================================
+ENHANCED EXTRACTION RESULTS
+============================================================
+Vehicle: None
+Weight: 39.740
+Consignee: | TPL LAV VOZ CPRR JOINT VENTUR
+
+============================================================
+ALL FIELDS:
+============================================================
+Traceback (most 
+recent call last):
+  File "C:\Users\avin
+4\Desktop\wbai_doc_ex
+tractor_engine-mainco
+py\test_enhanced.py",
+ line 26, in <module>
+    print(f"{status} 
+{k:35s}: {v}")
+  File "C:\Users\avin
+4\AppData\Local\Progr
+ams\Python\Python312\
+Lib\encodings\cp1252.
+py", line 19, in 
+encode
+    return codecs.cha
+rmap_encode(input,sel
+f.errors,encoding_tab
+le)[0]
+           ^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^
+UnicodeEncodeError: 
+'charmap' codec 
+can't encode 
+character '\u2713' 
+in position 0: 
+character maps to 
+<undefined>

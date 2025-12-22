@@ -1,0 +1,3 @@
+Input: 'Name & Address of Recipient:\nJCS READYMIX CONCRETE\npo 30/ 25-26/19.11.2025' -> Extracted: 'JCS READYMIX CONCRETE'
+Input: 'Name & Address of Recipient:\nSOME OTHER COMPANY\nPO 12345' -> Extracted: 'SOME OTHER COMPANY'
+Input: 'Name & Address of Recipient:\nVALID COMPANY NAME\nValid Address Line 1' -> Extracted: 'VALID COMPANY NAME Valid Address Line'

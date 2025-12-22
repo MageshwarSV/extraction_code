@@ -1,0 +1,11 @@
+# Build Docker image
+docker build -t wbai_ocr .
+
+# Save image as tar file
+docker save -o wbai_ocr.tar wbai_ocr
+
+# Load tar file (on target server)
+docker load -i wbai_ocr.tar
+
+# Run container
+docker run -d --name wbai_ocr -p 8000:8000 -p 30019:30019 wbai_ocr

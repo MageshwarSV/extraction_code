@@ -1,0 +1,29 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+venv/
+.env/
+
+# Environment variables with secrets
+.env
+
+# VSCode
+.vscode/
+
+# macOS
+.DS_Store
+
+# Tar files
+*.tar
+*.tar.gz
+*.tgz
+
+# Temporary PDF files
+*temp*.pdf
+temp*.pdf
+*_temp.pdf
+

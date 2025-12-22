@@ -1,0 +1,3 @@
+Input: 'Name & Address of Recipient:\nT R S ENTERPRISES\nNO 41 3A J N ROAD' -> Extracted: 'T R S ENTERPRISES'
+Input: 'Name & Address of Recipient:\nTRS ENTERPRISES\nNO 41 3A J N ROAD' -> Extracted: 'TRS ENTERPRISES'
+Input: 'Name & Address of Recipient:\nB N R AGENCIES' -> Extracted: 'B N R AGENCIES'

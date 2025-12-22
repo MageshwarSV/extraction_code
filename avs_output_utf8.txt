@@ -1,0 +1,2 @@
+Input: 'Name & Address of Recipient :\nAVS Tech Building Solutions I\nPvt Ltd.\nI Floor NO 298 AVS House\nPlace of Supply: Hosur' -> Extracted: 'AVS Tech Building Solutions I Pvt Ltd'
+Input: 'Name & Address of Recipient :\nAVS Tech Building Solutions I\nPvt Ltd.' -> Extracted: 'AVS Tech Building Solutions I Pvt Ltd'

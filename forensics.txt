@@ -1,0 +1,78 @@
+﻿======================================================================
+COMPLETE FORENSIC ANALYSIS: PDFKSS PDF
+======================================================================
+
+[1] FILE PROPERTIES
+----------------------------------------------------------------------
+File size: 393 KB
+Pages: 1
+PDF version: PDF 1.4
+Encrypted: False
+Metadata: {'format': 'PDF 1.4', 'title': '', 'author': '', 'subject': '', 'keywords': '', 'creator': '', 'producer': 'iLovePDF', 'creationDate': '', 'modDate': 'D:20250927111139Z', 'trapped': '', 'encryption': None}
+
+[2] PAGE PROPERTIES
+----------------------------------------------------------------------
+Page size: 597.0 x 844.0 pts
+Rotation: 0
+CropBox: Rect(0.0, 0.0, 597.0, 844.0)
+MediaBox: Rect(0.0, 0.0, 597.0, 844.0)
+
+[3] TEXT LAYER ANALYSIS
+----------------------------------------------------------------------
+Text chars: 0
+Has text layer: NO - SLOW PATH (OCR)
+
+[4] TEXT EXTRACTION METHODS
+----------------------------------------------------------------------
+Text blocks: 0
+Image blocks: 0
+
+[5] FONT ANALYSIS
+----------------------------------------------------------------------
+Fonts: 0
+
+[6] IMAGE ANALYSIS
+----------------------------------------------------------------------
+Images: 1
+  Image 1:
+    Size: 1661x2347 = 3,898,367 pixels
+    File size: 392 KB
+    Format: jpeg
+    Colorspace: 3
+    Bits/component: 8
+
+[7] COMPRESSION ANALYSIS
+----------------------------------------------------------------------
+Stream 7: 55 bytes
+  Filters: ('name', '/FlateDecode')
+
+[8] PDF OBJECTS
+----------------------------------------------------------------------
+Total objects: 10
+
+[9] EXTRACTION PATH PREDICTION
+----------------------------------------------------------------------
+Text length: 0
+Will use: SLOW PATH (OCR)
+
+[10] PDF STRUCTURE DUMP
+----------------------------------------------------------------------
+Page object:
+<<
+  /Type /Page
+  /MediaBox [ 0 0 597 844 ]
+  /Resources 4 0 R
+  /Contents 7 0 R
+  /Parent 2 0 R
+>>
+
+======================================================================
+ANALYSIS COMPLETE
+======================================================================
+
+KEY FINDINGS TO LOOK FOR:
+1. Does it have a text layer? (If YES = FAST, if NO = SLOW)
+2. Image pixel count (lower = faster OCR)
+3. Image compression/format
+4. Any special PDF flags or optimizations
+======================================================================

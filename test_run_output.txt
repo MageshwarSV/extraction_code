@@ -1,0 +1,115 @@
+﻿python : [INFO] Γ£ô Using 
+Tesseract: C:\Tesseract-OCR\
+tesseract.EXE
+At line:1 char:1
++ python 
+test_client1_format1.py 
+2>&1 | Out-File -Encoding 
+utf8 test_ru ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: ([INFO  
+  ] Γ£ô Usin...R\tesserac   
+ t.EXE:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+[INFO] Γ£ô Using Poppler: C:
+\poppler-25.07.0\Library\bin
+[INFO] =====================
+============================
+===========
+[INFO] PASS 1: Tesseract 
+OCR @ DPI 300 (Optimized 
+for speed)
+[INFO] =====================
+============================
+===========
+[INFO] Γ£ô Rendered 1 
+page(s) from PDF
+[INFO]   Processing page 
+1...
+[INFO] Γ£ô OCR completed. 
+Total text length: 306255 
+characters
+[INFO] 
+Extracting fields from OCR 
+text...
+[INFO]   Invoice No: 
+6978023250
+Traceback (most recent call 
+last):
+  File "C:\Users\avin4\Deskt
+op\wbai_doc_extractor_engine
+-maincopy\test_client1_forma
+t1.py", line 21, in <module>
+================================================================================
+TESTING client1_format1.py
+================================================================================
+PDF: c:\Users\avin4\Desktop\boostentryai ui code\test\123456789012.pdf
+Starting extraction at 17:35:08
+================================================================================
+    result = client1_format1
+.run(pdf_path)
+             ^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
+  File "c:\Users\avin4\Deskt
+op\wbai_doc_extractor_engine
+-maincopy\engine\extractors\
+client1_format1.py", line 
+2267, in run
+    invoice_date = 
+extract_invoice_date(text, 
+invoice_no)
+                   ^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^
+  File "c:\Users\avin4\Deskt
+op\wbai_doc_extractor_engine
+-maincopy\engine\extractors\
+client1_format1.py", line 
+290, in extract_invoice_date
+    norm = normalize_for_dat
+es(full_text)
+           ^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
+  File "c:\Users\avin4\Deskt
+op\wbai_doc_extractor_engine
+-maincopy\engine\extractors\
+client1_format1.py", line 
+259, in normalize_for_dates
+    trans = str.maketrans({
+            ^^^^^^^^^^^^^^^
+ValueError: string keys in 
+translate table must be of 
+length 1
+
+During handling of the 
+above exception, another 
+exception occurred:
+
+Traceback (most recent call 
+last):
+  File "C:\Users\avin4\Deskt
+op\wbai_doc_extractor_engine
+-maincopy\test_client1_forma
+t1.py", line 46, in <module>
+    print(f"\n\u2717 
+EXTRACTION FAILED!")
+  File "C:\Users\avin4\AppDa
+ta\Local\Programs\Python\Pyt
+hon312\Lib\encodings\cp1252.
+py", line 19, in encode
+    return codecs.charmap_en
+code(input,self.errors,encod
+ing_table)[0]
+           ^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
+UnicodeEncodeError: 
+'charmap' codec can't 
+encode character '\u2717' 
+in position 2: character 
+maps to <undefined>

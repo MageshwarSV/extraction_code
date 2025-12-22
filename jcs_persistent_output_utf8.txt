@@ -1,0 +1,4 @@
+Input: 'Name & Address of Recipient:\nJCS READYMIX CONCRETE\npo 30/ 25-26/19.11.2025' -> Extracted: 'JCS READYMIX CONCRETE'
+Input: 'Name & Address of Recipient:\nJCS READYMIX CONCRETE po 30/ 25-26/19.11.2025' -> Extracted: 'JCS READYMIX CONCRETE'
+Input: 'Name & Address of Recipient:\nJCS READYMIX CONCRETE po' -> Extracted: 'JCS READYMIX CONCRETE'
+Input: 'Name & Address of Recipient:\nJCS READYMIX CONCRETE PO 12345' -> Extracted: 'JCS READYMIX CONCRETE'

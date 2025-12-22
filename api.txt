@@ -1,0 +1,10 @@
+GET http://localhost:30019/api/transformations
+
+POST http://localhost:30019/api/transformations
+Content-Type: application/json
+
+{
+  "field_name": "Vehicle",
+  "from_value": "TN12AB3456",
+  "to_value": "TN34CD7890"
+}

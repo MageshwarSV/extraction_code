@@ -1,0 +1,62 @@
+﻿================================================================================
+FAST PDF ANALYSIS: pdfkss vs test folders
+================================================================================
+python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python 
+analyze_pdf_fast.py 
+2>&1 | Out-File 
+-Encoding UTF8 
+pdf_analysi ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Traceba   
+ ck (most recent     
+call last)::Stri    
+ng) [], RemoteEx    
+ception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+  File "C:\Users\avin
+4\Desktop\wbai_doc_ex
+tractor_engine-mainco
+py\analyze_pdf_fast.p
+y", line 120, in 
+<module>
+    main()
+  File "C:\Users\avin
+4\Desktop\wbai_doc_ex
+tractor_engine-mainco
+py\analyze_pdf_fast.p
+y", line 52, in main
+    
+print("\n\U0001f4c1 
+PDFKSS FOLDER:")
+  File "C:\Users\avin
+4\AppData\Local\Progr
+ams\Python\Python312\
+Lib\encodings\cp1252.
+py", line 19, in 
+encode
+    return codecs.cha
+rmap_encode(input,sel
+f.errors,encoding_tab
+le)[0]
+           ^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^
+UnicodeEncodeError: 
+'charmap' codec 
+can't encode 
+character 
+'\U0001f4c1' in 
+position 2: 
+character maps to 
+<undefined>

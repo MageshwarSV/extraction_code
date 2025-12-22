@@ -1,0 +1,19 @@
+============================================================
+DATA TRANSFORMATION API SERVER
+============================================================
+Starting API on http://0.0.0.0:30019
+
+Available endpoints:
+  GET    /api/transformations              - Get all transformations
+  GET    /api/transformations/<id>         - Get transformation by ID
+  GET    /api/transformations/field/<name> - Get by field name
+  POST   /api/transformations              - Create new transformation
+  PUT    /api/transformations/<id>         - Update transformation
+  DELETE /api/transformations/<id>         - Delete transformation
+  POST   /api/transformations/reload       - Reload cache
+  GET    /api/transformations/stats        - Get statistics
+  GET    /api/health                       - Health check
+
+============================================================
+ * Serving Flask app 'data_transformation'
+ * Debug mode: off

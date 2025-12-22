@@ -1,0 +1,64 @@
+﻿==========================================================================================
+SCANNER CHARACTERISTICS ANALYSIS
+==========================================================================================
+
+==========================================================================================
+PDFKSS (Machine Scanner)
+==========================================================================================
+
+[1] BASIC PROPERTIES:
+  Size: 1661 x 2347 pixels
+  Mode: RGB
+  File size: 402,136 bytes (392.7 KB)
+
+[2] IMAGE QUALITY (Scanner Optimizations):
+  Sharpness (Laplacian variance): 3380.7
+python : Traceback (most 
+recent call last):
+At line:1 char:1
++ python scanner_vs_camera_a
+nalysis.py 2>&1 | Out-File 
+-Encoding utf8 s ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Trace  
+  back (most recent call    
+ last)::String) [], Remo    
+teException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+  File "C:\Users\avin4\Deskt
+op\wbai_doc_extractor_engine
+-maincopy\scanner_vs_camera_
+analysis.py", line 202, in 
+<module>
+    pdfkss_metrics = analyze
+_scanner_properties(pdfkss, 
+"PDFKSS (Machine Scanner)")
+                     ^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\avin4\Deskt
+op\wbai_doc_extractor_engine
+-maincopy\scanner_vs_camera_
+analysis.py", line 67, in 
+analyze_scanner_properties
+    print(f"    \u2705 
+SHARP IMAGE (good for OCR)")
+  File "C:\Users\avin4\AppDa
+ta\Local\Programs\Python\Pyt
+hon312\Lib\encodings\cp1252.
+py", line 19, in encode
+    return codecs.charmap_en
+code(input,self.errors,encod
+ing_table)[0]
+           ^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
+UnicodeEncodeError: 
+'charmap' codec can't 
+encode character '\u2705' 
+in position 4: character 
+maps to <undefined>

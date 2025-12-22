@@ -1,0 +1,12 @@
+Processing: c:\Users\avin4\Desktop\boostentryai ui code\test\123456789012.pdf
+----------------------------------------
+RAW TEXT AROUND HEADER:
+her Tax is payable under Reverse Charge Yes No Ly
+Name & Address of Recipient : Recipient PO No/Date: Name& Address
+of Delivery:
+Oriental Structural Engineers 21228795/11:09,2025 Oriental Structural Engineers
+Pyi Ltd RS NO IS BY 3A 13 BY 2, | CPRR Projects NO: 1S/3A Kan
+KANDAMANGALAM VILLAGE Recipient Codé : 6410520005 galam; SriperumbudurECC-SRIPERAMBUDUR
+Place of Supply: SRI
+----------------------------------------
+Extracted Consignee: 'CPRR Projects'

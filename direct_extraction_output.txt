@@ -1,0 +1,77 @@
+DIRECT EXTRACTION RESULTS
+================================================================================
+
+Extraction Time: 5.67s
+Extraction Path: ocr_captured
+Success: True
+
+EXTRACTED FIELDS:
+--------------------------------------------------------------------------------
+Date: 04-10-2025
+
+
+FULL OCR TEXT:
+================================================================================
+_ ESE ———————————————_—EESSSSS Ee ee
+i —— = aves
+an Steer
+el a a AXINVO ‘niente
+a Exp. 04-10-2025 23:80:00 Ultra Tech Cement Limited ee Sa
+bisa IGSTIN : 33AAACL6442L1ZH [CIN : L26940MH2000PLC128420___ | TAN NO:BLRUOI804F _ | HSN Code: 2523 29 30 & lie
+ce IRN: a63b64afe20fe4e197787edS0b 1017862417 164ana6b9edB78e42 194 SCbIE Driver Mobile:09025820584 rod
+a Batch No: W/M/YY: 40/10/2025 Name of Commodity : Pie
+Pa sn ad
+SEs ‘Whether Tax Is payable under Reverse Charge Yes Cat ne CZ] ea
+eae Nashe & Address of Recipient : Recipient PO No/Date : Name & Address of Delivery: et
+Oe VASU AGENCIES 1137432035/ AKT MUTHE, poke
+esate EAST JONES ROAD Recipient Code : 641052V008 padurPADUR ce,
+eaees | Place of Supply: CHENNAI FADUR ‘ios
+erway ‘State: TAMIL NADU Phone No. : 9159392470 - Se ORR
+SES StateCode: Segment: TRADE State: TAMIL NADU State Code: 33 =
+= GSTIN NO: 33AGMPM7976M1ZI CUSTOMER Fa
+= ¢] ULTRATECH ised ase he Bl SA dw Rug ee
+——= F Basic Price Eee
+or = | LAMINATED HDPE / tes
+naka] =o PP PACK oe
+Say Be Gen Discount a
+pes ~ Scst Ne
+att Tax Amount in Words: R Fourteen Thousand Eight Hundred Righty And Paise Eighty Two Only :
+ae Invoice Amount in Words: Rupees Ninety Seven Thousand Five Hundred Fifty Two Only
+aoe ‘Name of Transporter : KSS ROADWAYS L.R.NoJRR Date: 02102025 D.O.No & Date; 1137432035 & 02.10.2025 ey
+nis ‘Vehicle No/Wagon NO.: TN73BY0885__L.RNo/RR No.: 6563 D..NO.& Date: 6978028529 & 02.10.2025) Niet
+oe ‘Mode of Transport: ROAD Commercial Terms : F.0.R SALE (FRI bee
+Certified that the particulars given above are true & correct & the amount indicated E.& 0. E. Re
+represents the price actually charged and there is no flow of any additional For ULTRATECH CEMENT LIMITED ‘na
+tign diyectly or indirectly from the recipient. cet he “se
+<= fis Invoice is payable by Ultra Tech Cement Linsited @ Rs.655.00 Per MT. (UNIT: ARAKON. Te
+Checked WORKS) WENKAT fal
+, co
+= We here by confirm that we have received above referred material in good baa:
+condition oma
+aa Seal: Signature name & Mobile No of Person/Party a
+mo Date: is receiving the material with rubber pn
+Z| In case of Ex-Depot sale the responsibility of ee eg eaphan sy ah eR 3
+= Payment invoice should be made by RTGS/NEFT/ACHV/IMPS infavour of ™ . ATES Nt ater anne we
+a st hn can may ce Cg wate Came Cin e Sse Rati x
+5 aS} Son doesent See en Se a ee Se cat CRN " 4
+oy Please ensure that any resale of the material should be done within the MRP printed on the bags. Tn ik eae 3
+I Input Tax reversal on the credit note issued by Company towards discount including any Rate Difference needs to be i beds - bru of
+BA oy you in the came month when such credit antes are erued sad Gloclone the same tn Periodical GST Retore, NGAP ae ae E
+es T.TDS deducted by you as per Income Tax Act, shall be credited to your account by UliraTech after receipt of TDS i
+* x ‘Consequential Joss, if any will be to your account, -
+<a for Subject to BANGALORE Jurisdiction |
+cae Office: B-wing.2nd floor.Aht eaare Mhahakali c; pad Andheri(EAS 1) ‘
+; > ! 3
+
+IRN: a63b64afe20fe4c 197787 edS0b | o1 7860417 | 64anaGb9cd8 78042 1 OBA IEbVE
+Batch No: = W/M/YY: 40/10/2025 Name of Commodity ;
+
+Yes ne CZ]
+
+‘State: TAMIL NADU
+‘State Code: xv
+GSTIN NO: 3AGMPM7976M1ZE
+
+Invoice Amount in Words: Rup Page i imag
+‘Name of Transporter : KSS ROADWAYS L.R.NoJRR Date: 02102025
+

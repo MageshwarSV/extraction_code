@@ -1,0 +1,27 @@
+EXTRACTION RESULTS
+================================================================================
+
+Time: 75.83s
+
+Consignment No: 6563
+Source: ARAKKONAM
+Destination: PADUR ATCH
+E-Way Bill No: None
+E-Way Bill Date: 03.10.2025
+E-Way Bill Valid Upto: None
+Consignor: UltraTech Cement Limited
+Consignee: VASU AGENCTES DiS
+Billing Party: VASU AGENCTES DiS
+Delivery Address: Aditresdof Akt Muthl, Piet Oad All. Living. Thaivur , 008, Pader Padue, Fadur, 9199592070, Phene Nao., States Tamil, Code; 33, Nadl State
+Vehicle: TNTIBYORS
+Driver Mobile: 8996758686
+Date (ERP entry date): 03.10.2025
+Invoice No: 8996758686
+Invoice Date: 03.10.2025
+Content Name (Goods Name): None
+Actual Weight: 13.000
+E-Way Bill No (Goods): None
+Rate: 655.00
+IRN: a6dbddafelOfede
+GST Type: Unregistered
+goods_type: BAG

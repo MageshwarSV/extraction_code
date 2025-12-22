@@ -1,0 +1,5 @@
+Input: 'Name & Address of Consignee: T RS ENTERPRISES' -> Extracted: 'T R S ENTERPRISES'
+Input: 'Name & Address of Consignee: A BC ENTERPRISES' -> Extracted: 'A B C ENTERPRISES'
+Input: 'Name & Address of Consignee: A TO Z ENTERPRISES' -> Extracted: 'A T O Z ENTERPRISES'
+Input: 'Name & Address of Consignee: GO TO HELL' -> Extracted: 'G O T O HELL'
+Input: 'Name & Address of Consignee: S L T ENTERPRISES' -> Extracted: 'S L T ENTERPRISES'

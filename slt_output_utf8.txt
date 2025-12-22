@@ -1,0 +1,4 @@
+Input: 'Name & Address of Consignee: SLT CEMENT MARKETERS PVT LTD' -> Extracted: 'SLT CEMENT MARKETERS PVT LTD'
+Input: 'Name & Address of Consignee: S L T CEMENT MARKETERS PVT LTD' -> Extracted: 'S L T CEMENT MARKETERS PVT LTD'
+Input: 'Name & Address of Consignee: BNR AGENCIES' -> Extracted: 'BNR AGENCIES'
+Input: 'Name & Address of Consignee: B N R AGENCIES' -> Extracted: 'B N R AGENCIES'

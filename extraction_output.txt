@@ -1,0 +1,99 @@
+﻿python : [INFO] Γ£ô 
+Using Tesseract: C:\T
+esseract-OCR\tesserac
+t.EXE
+At line:1 char:1
++ python -c "
++ ~~~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: ([INFO]    
+ Γ£ô Usin...R\tes    
+seract.EXE:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+[INFO] Γ£ô Using 
+Poppler: C:\poppler-2
+5.07.0\Library\bin
+[INFO] ==============
+=====================
+=====================
+====
+[INFO] Attempting 
+FAST PATH: PDF text 
+layer extraction
+[INFO] ==============
+=====================
+=====================
+====
+[INFO] No text layer 
+found, falling back 
+to OCR...
+[INFO] ==============
+=====================
+=====================
+====
+[INFO] PASS 1: 
+Tesseract OCR @ DPI 
+300 (Slow path)
+[INFO] ==============
+=====================
+=====================
+====
+Traceback (most 
+recent call last):
+  File "c:\Users\avin
+4\Desktop\wbai_doc_ex
+tractor_engine-mainco
+py\engine\extractors\
+client1_format1_backu
+p.py", line 2399, in 
+run
+    pages = convert_f
+rom_path(pdf_path, 
+dpi=300, 
+poppler_path=poppler)
+            
+^^^^^^^^^^^^^^^^^
+UnboundLocalError: 
+cannot access local 
+variable 
+'convert_from_path' 
+where it is not 
+associated with a 
+value
+
+During handling of 
+the above exception, 
+another exception 
+occurred:
+
+Traceback (most 
+recent call last):
+  File "<string>", 
+line 5, in <module>
+  File "c:\Users\avin
+4\Desktop\wbai_doc_ex
+tractor_engine-mainco
+py\engine\extractors\
+client1_format1_backu
+p.py", line 2405, in 
+run
+    raise 
+RuntimeError(
+RuntimeError: Failed 
+to render PDF: 
+cannot access local 
+variable 
+'convert_from_path' 
+where it is not 
+associated with a 
+value
+Install Poppler for 
+Windows and set 
+POPPLER_PATH 
+environment variable.
