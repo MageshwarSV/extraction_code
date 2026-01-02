@@ -82,7 +82,7 @@ print(f"  Saved to: uploaded_captured.pdf")
 print(f"\n[STEP 2] Extracting from CAPTURED IMAGE PDF")
 print(f"  Start: {datetime.now().strftime('%H:%M:%S')}")
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 start = time.time()
 result_captured = run(captured_pdf)

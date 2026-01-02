@@ -1,0 +1,30 @@
+--------------------
+DETECTED WORDS:
+Word: 'SHANMUGA' | Top: 12 | Conf: 91
+Word: 'DEPOT.' | Top: 10 | Conf: 74
+Word: 'Villivakkam' | Top: 61 | Conf: 88
+Word: 'main' | Top: 60 | Conf: 96
+Word: 'road' | Top: 58 | Conf: 95
+Word: 'Laxmipuram.' | Top: 109 | Conf: 58
+Word: 'MADHAV' | Top: 106 | Conf: 0
+Word: 'ARAM' | Top: 104 | Conf: 0
+Word: 'MADHAVARAM' | Top: 155 | Conf: 89
+Word: 'Phone' | Top: 205 | Conf: 94
+Word: 'No.' | Top: 205 | Conf: 93
+Word: ':' | Top: 211 | Conf: 63
+Word: '9444063905' | Top: 202 | Conf: 92
+Word: 'State:' | Top: 247 | Conf: 84
+Word: 'TAMIL' | Top: 247 | Conf: 84
+Word: 'NADU' | Top: 244 | Conf: 94
+Word: 'State' | Top: 244 | Conf: 94
+Word: 'Code' | Top: 242 | Conf: 95
+Word: 'Quantity' | Top: 368 | Conf: 91
+Word: '[UOM' | Top: 366 | Conf: 62
+Word: '|' | Top: 359 | Conf: 50
+Word: 'Rate' | Top: 364 | Conf: 50
+Word: 'Per' | Top: 363 | Conf: 96
+Word: '(in' | Top: 412 | Conf: 96
+Word: 'Rupe' | Top: 412 | Conf: 96
+Word: '25.000' | Top: 474 | Conf: 95
+Word: 'MT' | Top: 479 | Conf: 96
+Word: '6' | Top: 469 | Conf: 95

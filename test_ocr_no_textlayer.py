@@ -47,7 +47,7 @@ print(f"Text layer chars: {text_len} (should be 0 or minimal)")
 
 # Step 2: Run extraction
 print("\nStep 2: Running extraction (OCR path)...")
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 start_time = time.time()
 result = run(output_pdf)

@@ -1,0 +1,22 @@
+=== LOCAL lines with EWB (digits stripped) ===
+Line: '3 A EWB No. 511887551090 TAX INVOICE Original for Recipient'
+Digits: 3511887551090
+Length: 13
+First 12: 351188755109
+
+Line: 'EWB Exp. 05-10-2025 23:59:00 UltraTech Cement Limited me P'
+Digits: 05102025235900
+Length: 14
+First 12: 051020252359
+
+
+=== DOCKER lines with EWB (digits stripped) ===
+Line: 'LA EWB No. 511887551090 TAX INVOICE Original for Recinient'
+Digits: 511887551090
+Length: 12
+First 12: 511887551090
+
+Line: 'EWB Exp. 05-10202523:59:00  UltraTech Cement Limited nie P'
+Digits: 05102025235900
+Length: 14
+First 12: 051020252359

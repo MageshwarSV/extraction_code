@@ -8,7 +8,7 @@ from datetime import datetime
 # Add engine path
 sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
 
-from engine.extractors.client1 import run
+from engine.extractors.odsfhiaclient1_format1 import run
 
 # Test PDF path
 pdf_path = r'c:\Users\avin4\Desktop\boostentryai ui code\1234567890120.pdf'

@@ -1,0 +1,407 @@
+FORMAT 3 EXTRACTION RESULTS - PAGE BY PAGE
+============================================================
+
+Extraction Time: 2025-12-28 01:47:51
+Total Pages: 20
+Invoice Pages: 11
+Consignment Pages: 9
+
+============================================================
+
+Page  1: CONSIGNMENT
+         GC Number: 14549
+
+Page  2: INVOICE
+         Invoice No: 3900689440
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: HARIHARAN FOUNDATIONS INDIA PVT LTD
+         Branch: POTTANERI
+         Invoice Date: 12.12.2025
+         Destination: Soolagiri
+         Vehicle No: TN28BK1910
+         E-Way Bill: 561922523524
+         E-Way Date: 13.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.160
+         Address: Bagur Logistics Park Pvt Ltd, Mettubandanpalli, Shoolagiri Tq, KRISHNAGIRI, TAMIL NADU, 635117 SOOLAGIRI-KRISHNAGIRI, INDIA
+
+Page  3: CONSIGNMENT
+         GC Number: 14516
+
+Page  4: INVOICE
+         Invoice No: 3900688819
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: KALPATARU PROJECTS INTERNATIONAL LIMITED
+         Branch: POTTANERI
+         Invoice Date: 06.12.2025
+         Destination: Tambaram
+         Vehicle No: TN28BK1510
+         E-Way Bill: 521919465646
+         E-Way Date: 08.12.2025
+         PAN NO: AAACK8387R
+         GST No: 33AABCJ6731B123
+         Product Category: GGBS
+         Actual Weight: 40.060
+         Address: SY.NO 104/1, NAVINS SPRINGFIELD, MEDAVAKKAM MAIN ROAD,PALLIKARANAI, PALLIKARANAI, 600100 TAMBARAM-KANCHIPURAM, INDIA
+
+Page  5: CONSIGNMENT
+         GC Number: 14531
+
+Page  6: INVOICE
+         Invoice No: 3900692577
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: URC CONSTRUCTION (P) LTD
+         Branch: POTTANERI
+         Invoice Date: 08.12.2025
+         Destination: Ambattur
+         Vehicle No: TN28BK1810
+         E-Way Bill: 591920667612
+         E-Way Date: 10.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.020
+         Address: CAPITALAND MVDC-CHENNAI,PLOT NO.1-B,NP’, SIDCO INDUSTRIAL ESTATE,AMBATTUR, SIDCO ESTATE, 600098 AMBATTUR-TIRUVALLUR, INDIA
+
+Page  7: CONSIGNMENT
+         GC Number: 14519
+
+Page  8: INVOICE
+         Invoice No: 3900684863
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: KCC BUILDCON PRIVATE LIMITED
+         Branch: POTTANERI
+         Invoice Date: 06.12.2025
+         Destination: Walajapet
+         Vehicle No: TN28BE9110
+         E-Way Bill: 581919586833
+         E-Way Date: 08.12.2025
+         PAN NO: AADCK8357N
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.080
+         Address: PATTA NO.245,SURVEY NO.81/2 TO 91/38 E, KOOT ROAD, THIRUVALAM VILLAGE, TIRUVALAM, 632515 WALAJAPET-VELLORE, INDIA
+
+Page  9: CONSIGNMENT
+         GC Number: 14512
+
+Page 10: INVOICE
+         Invoice No: 3900689040
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: SAM(INDIA) BUILT WELL PVT LTD
+         Branch: POTTANERI
+         Invoice Date: 05.12.2025
+         Destination: Chennai
+         Vehicle No: AP39UQ5153
+         E-Way Bill: 531919199300
+         E-Way Date: 07.12.2025
+         PAN NO: AABCS7627K
+         GST No: None
+         Product Category: GGBS
+         Actual Weight: 35.000
+         Address: RAILWAY STATION,NO 8E, THIRUVALLUVAR, PERUNGUDI RAILWAY STATION ROAD, TIRUVANMIYUR, 600041 CHENNAI-CHENNAI, INDIA
+
+Page 11: INVOICE
+         Invoice No: 3900682255
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: URC CONSTRUCTION PRIVATE LIMITED
+         Branch: POTTANERI
+         Invoice Date: 04.12.2025
+         Destination: Perambur purasawalkam
+         Vehicle No: AP39WA6987
+         E-Way Bill: 501918736055
+         E-Way Date: 06.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 39.480
+         Address: CMRL UG-SALT COTAURS YARD, CHENNAI BASIN BRIDGE ROAD, PULIYANTHOPE, 600012 PERAMBUR PURASAWALKAM-CHENNAI, INDIA
+
+Page 12: CONSIGNMENT
+         GC Number: 14144
+
+Page 13: CONSIGNMENT
+         GC Number: 14506
+
+Page 14: INVOICE
+         Invoice No: 3900685870
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: KCC BUILDCON PRIVATE LIMITED
+         Branch: POTTANERI
+         Invoice Date: 03.12.2025
+         Destination: Walajapet
+         Vehicle No: AP39VE2968
+         E-Way Bill: 511918170847
+         E-Way Date: 05.12.2025
+         PAN NO: AADCK8357N
+         GST No: 33AABCJ6731B123
+         Product Category: GGBS
+         Actual Weight: 35.020
+         Address: PATTA NO.245,SURVEY NO.81/2 TO 91/3B E, KOOT ROAD, THIRUVALAM VILLAGE, TIRUVALAM, 632515 WALAJAPET-VELLORE, INDIA
+
+Page 15: INVOICE
+         Invoice No: 3011184294
+         Consignor: JSW CEMENT LIMITED NANDYAL
+         Consignee: JSW CEMENT LTD-KANCHIPURAM
+         Branch: BILAKALAGUDUR
+         Invoice Date: 12.12.2025
+         Destination: Kanchipuram
+         Vehicle No: TN23CR4411
+         E-Way Bill: 162289549187
+         E-Way Date: 15.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 37AABCJ6731B1ZV
+         Product Category: AD STAR
+         Actual Weight: 25.000
+         Address: 47, SIDCO, INDUSTRIAL ESTATE, ORIKKAI, KANCHIPURAM (TN), 631501 KANCHIPURAM-KANCHIPURAM, INDIA
+
+Page 16: INVOICE
+         Invoice No: 3011200961
+         Consignor: JSW CEMENT LIMITED NANDYAL
+         Consignee: MERCURY STEELS PRIVATE LIMITED
+         Branch: BILAKALAGUDUR
+         Invoice Date: 12.12.2025
+         Destination: Kanchipuram
+         Vehicle No: TN23CR4411
+         E-Way Bill: 132289549188
+         E-Way Date: 15.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 37AABCJ6731B1ZV
+         Product Category: BOPP BAG
+         Actual Weight: 10.000
+         Address: NO : 26/184, THIRUVALLUR NAGAR ROAD, SIRUKAVERIPAKKAM, THIRUVALLUR SOCIE, SIRUKAVERIPAKKAM, 631502 KANCHIPURAM-KANCHIPURAM, INDIA
+
+Page 17: CONSIGNMENT
+         GC Number: 14562
+
+Page 18: INVOICE
+         Invoice No: 3900697947
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: Concrete OEM P Ltd
+         Branch: POTTANERI
+         Invoice Date: 14.12.2025
+         Destination: Chennai
+         Vehicle No: TN88L4438
+         E-Way Bill: 561923681029
+         E-Way Date: 16.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.060
+         Address: Survey no. 209, Peruvoyal Village, Gummidipoondi Taluk, 600020 CHENNAL-THIRUVALUR, INDIA
+
+Page 19: CONSIGNMENT
+         GC Number: 14511
+
+Page 20: INVOICE
+         Invoice No: 3900687951
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: SRI MAHALAKSHMI BLUE METALS
+         Branch: POTTANERI
+         Invoice Date: 05.12.2025
+         Destination: Krishnagiri
+         Vehicle No: TN28BK1910
+         E-Way Bill: 521918895761
+         E-Way Date: 06.12.2025
+         PAN NO: ACYPN1313R
+         GST No: None
+         Product Category: GGBS
+         Actual Weight: 40.120
+         Address: SY NO. 305, BERIGAI MAIN ROAD, SONNEPURAM VILL,BERIGAI POST, HOSUR, BERIGAI, 635105 KRISHNAGIRI-KRISHNAGIRI, INDIA
+
+============================================================
+Status: success
+============================================================
+
+Extraction Time: 2025-12-28 01:40:17
+Total Pages: 20
+Invoice Pages: 11
+Consignment Pages: 9
+
+============================================================
+
+Page  1: CONSIGNMENT
+         GC Number: 14549
+
+Page  2: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: HARIHARAN FOUNDATIONS INDIA PVT LTD
+         Branch: POTTANERI
+         Invoice Date: 12.12.2025
+         Destination: Soolagiri
+         Vehicle No: TN28BK1910
+         E-Way Bill: 561922523524
+         E-Way Date: 13.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.160
+
+Page  3: CONSIGNMENT
+         GC Number: 14516
+
+Page  4: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: KALPATARU PROJECTS INTERNATIONAL LIMITED
+         Branch: POTTANERI
+         Invoice Date: 06.12.2025
+         Destination: Tambaram
+         Vehicle No: TN28BK1510
+         E-Way Bill: 521919465646
+         E-Way Date: 08.12.2025
+         PAN NO: AAACK8387R
+         GST No: 33AABCJ6731B123
+         Product Category: GGBS
+         Actual Weight: 40.060
+
+Page  5: CONSIGNMENT
+         GC Number: 14531
+
+Page  6: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: URC CONSTRUCTION (P) LTD
+         Branch: POTTANERI
+         Invoice Date: 08.12.2025
+         Destination: Ambattur
+         Vehicle No: TN28BK1810
+         E-Way Bill: 591920667612
+         E-Way Date: 10.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.020
+
+Page  7: CONSIGNMENT
+         GC Number: 14519
+
+Page  8: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: KCC BUILDCON PRIVATE LIMITED
+         Branch: POTTANERI
+         Invoice Date: 06.12.2025
+         Destination: Walajapet
+         Vehicle No: TN28BE9110
+         E-Way Bill: 581919586833
+         E-Way Date: 08.12.2025
+         PAN NO: AADCK8357N
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.080
+
+Page  9: CONSIGNMENT
+         GC Number: 14512
+
+Page 10: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: SAM(INDIA) BUILT WELL PVT LTD
+         Branch: POTTANERI
+         Invoice Date: 05.12.2025
+         Destination: Chennai
+         Vehicle No: AP39UQ5153
+         E-Way Bill: 531919199300
+         E-Way Date: 07.12.2025
+         PAN NO: AABCS7627K
+         GST No: -
+         Product Category: GGBS
+         Actual Weight: 35.000
+
+Page 11: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: URC CONSTRUCTION PRIVATE LIMITED
+         Branch: POTTANERI
+         Invoice Date: 04.12.2025
+         Destination: Perambur purasawalkam
+         Vehicle No: AP39WA6987
+         E-Way Bill: 501918736055
+         E-Way Date: 06.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 39.480
+
+Page 12: CONSIGNMENT
+         GC Number: 14144
+
+Page 13: CONSIGNMENT
+         GC Number: 14506
+
+Page 14: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: KCC BUILDCON PRIVATE LIMITED
+         Branch: POTTANERI
+         Invoice Date: 03.12.2025
+         Destination: Walajapet
+         Vehicle No: AP39VE2968
+         E-Way Bill: 511918170847
+         E-Way Date: 05.12.2025
+         PAN NO: AADCK8357N
+         GST No: 33AABCJ6731B123
+         Product Category: GGBS
+         Actual Weight: 35.020
+
+Page 15: INVOICE
+         Consignor: JSW CEMENT LIMITED NANDYAL
+         Consignee: JSW CEMENT LTD-KANCHIPURAM
+         Branch: BILAKALAGUDUR
+         Invoice Date: 12.12.2025
+         Destination: Kanchipuram
+         Vehicle No: TN23CR4411
+         E-Way Bill: 162289549187
+         E-Way Date: 15.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 37AABCJ6731B1ZV
+         Product Category: AD STAR
+         Actual Weight: 25.000
+
+Page 16: INVOICE
+         Consignor: JSW CEMENT LIMITED NANDYAL
+         Consignee: MERCURY STEELS PRIVATE LIMITED
+         Branch: BILAKALAGUDUR
+         Invoice Date: 12.12.2025
+         Destination: Kanchipuram
+         Vehicle No: TN23CR4411
+         E-Way Bill: 132289549188
+         E-Way Date: 15.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 37AABCJ6731B1ZV
+         Product Category: BOPP BAG
+         Actual Weight: 10.000
+
+Page 17: CONSIGNMENT
+         GC Number: 14562
+
+Page 18: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: Concrete OEM P Ltd
+         Branch: POTTANERI
+         Invoice Date: 14.12.2025
+         Destination: Chennai
+         Vehicle No: TN88L4438
+         E-Way Bill: 561923681029
+         E-Way Date: 16.12.2025
+         PAN NO: AABCJ6731B
+         GST No: 33AABCJ6731B1Z3
+         Product Category: GGBS
+         Actual Weight: 40.060
+
+Page 19: CONSIGNMENT
+         GC Number: 14511
+
+Page 20: INVOICE
+         Consignor: JSW CEMENT LIMITED POTTANERI
+         Consignee: SRI MAHALAKSHMI BLUE METALS
+         Branch: POTTANERI
+         Invoice Date: 05.12.2025
+         Destination: Krishnagiri
+         Vehicle No: TN28BK1910
+         E-Way Bill: 521918895761
+         E-Way Date: 06.12.2025
+         PAN NO: ACYPN1313R
+         GST No: -
+         Product Category: GGBS
+         Actual Weight: 40.120
+
+============================================================
+Status: success

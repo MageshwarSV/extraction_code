@@ -103,7 +103,7 @@ print(f"  Created: {pdf_path}")
 
 # [4] Run extraction
 print(f"\n[4] Running extraction on preprocessed image...")
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 start_extract = time.time()
 result = run(pdf_path)

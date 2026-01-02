@@ -67,7 +67,7 @@ print(f"Image: {w}x{h}")
 print(f"\n[EXTRACTION TEST - 90 SECOND LIMIT]")
 print(f"Start: {datetime.now().strftime('%H:%M:%S')}")
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 extraction_done = False
 result = None

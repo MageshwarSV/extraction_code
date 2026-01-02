@@ -21,6 +21,9 @@ import pytesseract
 from pdf2image import convert_from_path
 from pytesseract import Output
 from PIL import Image, ImageOps, ImageFilter
+import cv2  # Added for deskewing
+import numpy as np # Added for matrix operations
+from difflib import SequenceMatcher # Added for fuzzy matching
 
 # Disable PIL decompression bomb limit to allow large camera-captured images
 Image.MAX_IMAGE_PIXELS = None
@@ -249,6 +252,336 @@ def _merge_text(blocks: List[str]) -> str:
             merged.append(s)
     
     return "\n".join(merged)
+
+
+# -------------------------
+# Delivery Address Helpers (Ported from Format 3 for Robustness)
+# -------------------------
+
+def clean_trailing_noise(text):
+    """Strip noise and unwanted artifacts from the end of the extracted name."""
+    if not text:
+        return text
+    text = text.strip()
+    
+    # 1. Strip non-alphanumeric trailing characters (symbols)
+    text = re.sub(r'[^a-zA-Z0-9)\]]+$', '', text).strip()
+    
+    # 2. Handle cases like "COMPANY LIMITED x"
+    if len(text) > 3:
+        text = re.sub(r'\s+[a-z0-9]$', '', text).strip()
+        text = re.sub(r'\s+[xX]$', '', text).strip()
+        
+    return text.strip()
+
+def get_header_points(image_cv):
+    """Find multiple points along the 'Name & Address of Delivery' header to detect curvature."""
+    # Use PSM 6 to detect lines/words
+    data = pytesseract.image_to_data(image_cv, config='--psm 6', output_type=pytesseract.Output.DICT)
+    points = []
+    
+    for i in range(len(data['text'])):
+        text = data['text'][i].lower().strip()
+        if not text: continue
+            
+        # Match "Name", "Address", "Delivery"
+        if any(k in text for k in ['name', 'addr', 'deliv']):
+            if data['conf'][i] > 25:
+                points.append({
+                    'x': data['left'][i] + data['width'][i] // 2,
+                    'y': data['top'][i] + data['height'][i] // 2,
+                    'left': data['left'][i],
+                    'right': data['left'][i] + data['width'][i],
+                    'conf': data['conf'][i]
+                })
+    
+    if not points:
+        return None
+        
+    # Standardize to one line (filter outliers in Y)
+    if points:
+        avg_y = np.median([p['y'] for p in points])
+        line_points = [p for p in points if abs(p['y'] - avg_y) < 25]
+    else:
+        line_points = []
+    
+    if not line_points:
+        return None
+        
+    return sorted(line_points, key=lambda p: p['x'])
+
+def piecewise_deskew(image, points, target_y=20, crop_height=125):
+    """Straighten the image based on a set of control points along a curve."""
+    if not points:
+        return image
+        
+    (h, w) = image.shape[:2]
+    map_x = np.zeros((crop_height, w), np.float32)
+    map_y = np.zeros((crop_height, w), np.float32)
+
+    if len(points) < 2:
+        # Fallback: Just vertical shift
+        local_y = points[0]['y']
+        for cy in range(crop_height):
+            for x in range(w):
+                map_x[cy, x] = x
+                map_y[cy, x] = local_y + (cy - target_y)
+    else:
+        xs = [p['x'] for p in points]
+        ys = [p['y'] for p in points]
+        
+        for x in range(w):
+            if x <= xs[0]:
+                local_y = ys[0]
+            elif x >= xs[-1]:
+                local_y = ys[-1]
+            else:
+                for i in range(len(xs)-1):
+                    if xs[i] <= x <= xs[i+1]:
+                        ratio = (x - xs[i]) / (xs[i+1] - xs[i])
+                        local_y = ys[i] + ratio * (ys[i+1] - ys[i])
+                        break
+            
+            for cy in range(crop_height):
+                map_x[cy, x] = x
+                map_y[cy, x] = local_y + (cy - target_y)
+            
+    return cv2.remap(image, map_x, map_y, interpolation=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+
+def is_stop_line(text):
+    """Check if a line marks the end of the address block."""
+    text_upper = text.upper().strip()
+    
+    # Specific stop markers for Format 1
+    stop_starts = ["PHONE", "STATE", "MOB", "EMAIL", "PH:", "PH :"]
+    for s in stop_starts:
+        if text_upper.startswith(s):
+            return True
+            
+    # Check for K001 pattern if it appears at the bottom (unlikely but safe)
+    if re.match(r'^K\d{3}', text_upper):
+        return False # This is actually part of the address code, usually at the start/left
+        
+    # Check for State Code: 33 pattern
+    if "STATE CODE" in text_upper:
+        return True
+        
+    return False
+
+def clean_address_lines_robust(lines):
+    """Clean up the extracted address text, respecting stop markers."""
+    final_lines = []
+    
+    for line in lines:
+        l = line.strip()
+        if not l:
+            continue
+            
+        # Check for stop marker
+        if is_stop_line(l):
+            # If we hit "Phone No" or "State Code", stop collecting
+            break
+            
+        # Clean line
+        # Strip specific trailing noise chars like ; | !
+        l = re.sub(r'\s*[;|!\\/]+$', '', l).strip()
+        
+        # Strip trailing "K001" if it was erroneously appended to a line (usually it's on the left)
+        # But if the user WANTS K001, we should keep it. 
+        # The user said "take k001 also".
+        
+        if l:
+            final_lines.append(l)
+            
+    # Join with space (comma separation can be added if needed, but space is safer for now)
+    return ", ".join(final_lines)
+
+def extract_delivery_address_robust(page_image, page_num=0, debug=False) -> str:
+    """
+    Extract Delivery Address using Bend-Crop (piecewise deskewing).
+    Designed to capture 'K001' on the left and stop at 'Phone No' on the bottom.
+    Dynamically adjusts crop height to exclude bottom text visually.
+    """
+    try:
+        # Convert to OpenCV format
+        img_cv = cv2.cvtColor(np.array(page_image), cv2.COLOR_RGB2BGR)
+        height, width = img_cv.shape[:2]
+        
+        # Search area: generous
+        search_y1, search_y2 = int(height * 0.10), int(height * 0.60)
+        search_x1, search_x2 = int(width * 0.40), int(width * 0.98)
+        search_area = img_cv[search_y1:search_y2, search_x1:search_x2]
+        
+        header_points = get_header_points(search_area)
+        
+        if header_points:
+            hw = header_points[-1]['right'] - header_points[0]['left']
+            hx_start = header_points[0]['left']
+            
+            # Deskew deep enough to catch everything initially
+            straightened = piecewise_deskew(search_area, header_points, target_y=20, crop_height=600)
+            
+            # --- Vertical Line Detection (for strict left crop) ---
+            # Create a binary image to detect vertical lines
+            gray_straight = cv2.cvtColor(straightened, cv2.COLOR_BGR2GRAY)
+            bw = cv2.adaptiveThreshold(~gray_straight, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, -2)
+            
+            # Use vertical structure element
+            vertical = bw.copy()
+            # Length of line to detect: fairly long so we don't pick up text stems
+            v_len = straightened.shape[0] // 15
+            verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (1, v_len))
+            vertical = cv2.erode(vertical, verticalStructure)
+            vertical = cv2.dilate(vertical, verticalStructure)
+            
+            # Find contours of vertical lines
+            cnts, _ = cv2.findContours(vertical, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            
+            # Find the best vertical line to the LEFT of the header
+            # And also to the RIGHT of the header (to avoid cutting long addresses)
+            
+            hx_start = header_points[0]['left']
+            hx_end = header_points[-1]['right']
+            
+            best_x_left = -1
+            min_dist_left = float('inf')
+            
+            best_x_right = -1
+            min_dist_right = float('inf')
+            
+            # Debug detected lines
+            if debug:
+                line_debug_img = straightened.copy()
+            
+            for c in cnts:
+                x, y, w, h = cv2.boundingRect(c)
+                cx = x + w // 2
+                
+                if debug:
+                    cv2.rectangle(line_debug_img, (x, y), (x+w, y+h), (0, 0, 255), 2)
+                
+                # Check if it's a valid separator (must be TALL to be a column separator)
+                # 50px is too short (can be text/noise). Use 150px to find the main column line.
+                if h < 150: continue 
+                
+                # --- LEFT SIDE SNAP ---
+                if cx < hx_start:
+                    dist = hx_start - cx
+                    # We want the NEAREST line to the left (the immediate column separator)
+                    # "Leftmost" would pick the start of the previous column (e.g. PO No), which is wrong.
+                    if dist < min_dist_left and dist < (hw * 0.45):
+                        min_dist_left = dist
+                        best_x_left = x + w # Snap to right side of the line rect (cleaner than cx+w)
+                        
+                # --- RIGHT SIDE SNAP ---
+                elif cx > hx_end:
+                    # We want the RIGHTMOST line (table border) to avoid snapping to 
+                    # noise streaks inside the address text.
+                    if cx > best_x_right:
+                        best_x_right = cx # Snap to left side of the line
+
+            if debug:
+                debug_dir = r"c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\gc_crops_verify\delivery_debug_f1"
+                if not os.path.exists(debug_dir): os.makedirs(debug_dir)
+                cv2.imwrite(os.path.join(debug_dir, f"page_{page_num}_lines_debug.png"), line_debug_img)
+            
+            # --- Determine Crop Coordinates ---
+            crop_y1 = 45 # Start just below header
+            crop_y2_initial = 580 # Deep probe
+            
+            # Left Crop
+            if best_x_left != -1:
+                logger.info(f"[Delivery] Snapping left crop to vertical line at x={best_x_left}")
+                crop_x1 = best_x_left + 2 
+            else:
+                logger.info("[Delivery] No left vertical separator found. Using fallback offset.")
+                crop_x1 = max(0, hx_start - int(hw * 0.20)) 
+                
+            # Right Crop - KEY FIX for "POONAMALLE HIGH ROAD"
+            if best_x_right != -1:
+                logger.info(f"[Delivery] Snapping right crop to vertical line at x={best_x_right}")
+                crop_x2 = best_x_right - 2
+            else:
+                # Fallback: USE FULL WIDTH instead of arbitrary cut
+                # The search area (0.98 width) is already bounded safely enough for typical cases
+                logger.info("[Delivery] No right vertical separator found. Using full available width.")
+                crop_x2 = straightened.shape[1]
+            
+            probe_crop = straightened[crop_y1:crop_y2_initial, crop_x1:crop_x2]
+            
+            if probe_crop.size == 0:
+                logger.warning("[Delivery] Probe crop is empty")
+                return ""
+                
+            # Gray & Threshold for OCR logic
+            gray = cv2.cvtColor(probe_crop, cv2.COLOR_BGR2GRAY)
+            _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            
+            # Use image_to_data to find visual boundaries of text lines
+            data = pytesseract.image_to_data(thresh, config='--psm 6', output_type=pytesseract.Output.DICT)
+            
+            # Find the split point (Y-coord) where "Phone" or "State" appears
+            # Scan words directly for stop markers (more robust than line grouping)
+            cut_y = probe_crop.shape[0] 
+            stop_found = False
+            
+            n_boxes = len(data['text'])
+            for i in range(n_boxes):
+                word = data['text'][i].strip().lower()
+                if not word: 
+                    continue
+                    
+                # Remove common punctuation
+                clean_word = re.sub(r'[^\w]', '', word)
+                
+                # Check for stop keywords
+                # DEBUG: Log words to see what's happening
+                if debug:
+                    logger.info(f"    [Word Scan] '{word}' -> '{clean_word}' ({data['text'][i]}) (Y={data['top'][i]})")
+                
+                if clean_word in ['phone', 'state', 'mob', 'email', 'ph', 'mobile']:
+                    t = int(data['top'][i])
+                    # We want the highest (smallest Y) occurrence
+                    if t < cut_y:
+                        cut_y = t
+                        stop_found = True
+                        logger.info(f"  [Delivery] VISUAL STOP MATCH: '{word}' at Y={t}")
+
+            # Apply a small margin (cut slightly above the stop word)
+            if stop_found:
+                cut_y = max(0, cut_y - 5)
+            
+            logger.info(f"  [Delivery] FINAL CUT Y: {cut_y} (Original H: {probe_crop.shape[0]})")
+                
+            # Create final clean crop
+            final_crop = probe_crop[0:cut_y, :]
+            
+            # Save debug crop if requested
+            if True: 
+                debug_dir = r"c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\gc_crops_verify\delivery_debug_f1"
+                if not os.path.exists(debug_dir): os.makedirs(debug_dir)
+                crop_path = os.path.join(debug_dir, f"page_{page_num}_delivery_robust.png")
+                cv2.imwrite(crop_path, final_crop)
+                logger.info(f"[Delivery] Saved debug crop to {crop_path}")
+                
+            # OCR the final crop
+            final_gray = cv2.cvtColor(final_crop, cv2.COLOR_BGR2GRAY)
+            _, final_thresh = cv2.threshold(final_gray, 150, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            text = pytesseract.image_to_string(final_thresh, config='--psm 6').strip()
+            lines = [l.strip() for l in text.split('\n') if l.strip()]
+            
+            if lines:
+                # We can skip the 'is_stop_line' check in cleaning if the visual crop worked, 
+                # but valid to keep it as a backup
+                cleaned = clean_address_lines_robust(lines)
+                logger.info(f"[Delivery] Extracted Robust: {cleaned}")
+                return cleaned
+
+                
+    except Exception as e:
+        logger.error(f"[Delivery] Robust extraction failed: {e}", exc_info=True)
+        
+    return ""
 
 
 # -------------------------
@@ -1340,6 +1673,7 @@ def _normalize_ocr_smudge(text: str) -> str:
         'o': '0',
         'I': '1',  # Letter I to digit 1
         'l': '1',  # Lowercase L to digit 1
+        'L': '1',  # Uppercase L to digit 1 (critical for vehicle plates)
         '|': '1',
         'S': '5',  # Letter S to digit 5
         's': '5',
@@ -1866,6 +2200,11 @@ def _normalize_vehicle_ocr_errors(plate: str) -> str:
     # Debug: Show what we're working with
     logger.info(f"  [Vehicle] Normalizing: '{plate}' (len={len(plate)})")
     
+    # Fix common OCR error: "FN" misread for "TN" (e.g. FN45... -> TN45...)
+    if plate.startswith("FN"):
+        logger.info(f"  [Vehicle] OCR fix: {plate} -> TN{plate[2:]} (FN->TN)")
+        plate = "TN" + plate[2:]
+    
     # Fix common OCR error: "118" misread for "18" in district section
     # Example: TN118K7553 â†’ TN18K7553 (extra "1" inserted)
     # Pattern: XX118 (where next char is a letter in series)
@@ -2013,6 +2352,197 @@ def _normalize_vehicle_ocr_errors(plate: str) -> str:
     return plate
 
 
+def _fix_oversized_vehicle(plate: str) -> str:
+    """
+    Fix 11+ character vehicle numbers by analyzing structure and removing duplicates.
+    
+    Indian vehicle format: SS DD LL NNNN
+    - SS = 2 letters (State: TN, KA, MH)
+    - DD = 1-2 digits (District: 5, 05, 23)
+    - LL = 1-2 letters (Series: A, AM, AY)
+    - NNNN = 4 digits (Number: 5290)
+    
+    Total = 8-10 characters maximum.
+    
+    If length > 10, OCR likely duplicated a similar-looking character at boundaries:
+    - S ↔ 5
+    - O ↔ 0, D
+    - I ↔ 1, L
+    - B ↔ 8
+    
+    Example: TN23AMS5290 (11 chars) → TN23AM5290 (S is duplicate of 5)
+    """
+    if not plate:
+        return plate
+    
+    plate = plate.upper().replace(' ', '')
+    
+    # Only process if length > 10 (oversized)
+    if len(plate) <= 10:
+        return plate
+    
+    logger.info(f"  [Vehicle] Fixing oversized plate ({len(plate)} chars): {plate}")
+    
+    # Similar character pairs (letter ↔ digit mappings)
+    LETTER_TO_DIGIT = {'S': '5', 'O': '0', 'D': '0', 'I': '1', 'L': '1', 'B': '8'}
+    DIGIT_TO_LETTER = {'5': 'S', '0': 'O', '1': 'I', '8': 'B'}
+    
+    # Parse the plate structure: SS (2 letters) + rest
+    if len(plate) < 2 or not plate[:2].isalpha():
+        logger.warning(f"  [Vehicle] Invalid plate format (no state code): {plate}")
+        return plate
+    
+    state = plate[:2]  # Always 2 letters
+    rest = plate[2:]
+    
+    # Find where digits start (district section)
+    district_start = 0
+    while district_start < len(rest) and rest[district_start].isdigit():
+        district_start += 1
+        if district_start >= 2:  # Max 2 district digits
+            break
+    
+    # If no digits found, try to find digit-like letters at start
+    if district_start == 0:
+        # Check if first char is a letter that looks like a digit
+        if rest[0] in LETTER_TO_DIGIT:
+            # Could be O (looks like 0) or similar
+            logger.info(f"  [Vehicle] First char '{rest[0]}' looks like digit, treating as district part")
+            district_start = 1
+            if len(rest) > 1 and (rest[1].isdigit() or rest[1] in LETTER_TO_DIGIT):
+                district_start = 2
+    
+    district = rest[:district_start] if district_start > 0 else ""
+    after_district = rest[district_start:]
+    
+    # Find where series (letters) section is
+    series_end = 0
+    while series_end < len(after_district) and after_district[series_end].isalpha():
+        series_end += 1
+        if series_end >= 3:  # Max 2-3 series letters (3 means possible duplicate)
+            break
+    
+    series = after_district[:series_end]
+    number = after_district[series_end:]
+    
+    logger.info(f"  [Vehicle] Parsed: State={state}, District={district}, Series={series}, Number={number}")
+    logger.info(f"  [Vehicle] Lengths: State=2, District={len(district)}, Series={len(series)}, Number={len(number)}")
+    
+    # Calculate expected vs actual length
+    # Valid: State(2) + District(1-2) + Series(1-2) + Number(4) = 8-10
+    total_len = 2 + len(district) + len(series) + len(number)
+    
+    # Check which section is oversized
+    fixed = False
+    
+    # Case 1a: Series has 3+ letters AND first letter looks like last digit of district
+    # Example: KA01LAN0922 -> L looks like 1, so LAN should be AN (remove first L)
+    if len(series) >= 3 and len(district) >= 1:
+        first_series_char = series[0]
+        last_district_char = district[-1]
+        
+        # Check if first series letter looks like last digit of district
+        if first_series_char in LETTER_TO_DIGIT:
+            expected_digit = LETTER_TO_DIGIT[first_series_char]
+            if last_district_char == expected_digit:
+                # Remove the duplicate letter from series start
+                series = series[1:]
+                logger.info(f"  [Vehicle] Removed duplicate '{first_series_char}' from series start (looks like '{expected_digit}')")
+                fixed = True
+    
+    # Case 1b: Series has 3+ letters AND last letter looks like first digit of number
+    # Example: AMS should be AM (S is duplicate of 5 from number)
+    if not fixed and len(series) >= 3 and len(number) >= 4:
+        last_series_char = series[-1]
+        first_num_char = number[0] if number else ""
+        
+        # Check if last series letter looks like first digit of number
+        if last_series_char in LETTER_TO_DIGIT:
+            expected_digit = LETTER_TO_DIGIT[last_series_char]
+            if first_num_char == expected_digit or first_num_char == last_series_char:
+                # Remove the duplicate letter from series
+                series = series[:-1]
+                logger.info(f"  [Vehicle] Removed duplicate '{last_series_char}' from series (looks like '{expected_digit}')")
+                fixed = True
+    
+    # Case 2: District has 3+ digits (should be max 2)
+    if not fixed and len(district) >= 3:
+        last_district_char = district[-1]
+        first_series_char = series[0] if series else ""
+        
+        # Check if last district digit looks like first letter of series
+        if last_district_char in DIGIT_TO_LETTER:
+            expected_letter = DIGIT_TO_LETTER[last_district_char]
+            if first_series_char == expected_letter or first_series_char == last_district_char:
+                # Remove the duplicate digit from district
+                district = district[:-1]
+                logger.info(f"  [Vehicle] Removed duplicate '{last_district_char}' from district (looks like '{expected_letter}')")
+                fixed = True
+    
+    # Case 3: Number has 5+ digits (should be max 4)
+    if not fixed and len(number) >= 5:
+        # Check if first digit of number is duplicate of last series letter
+        first_num_char = number[0]
+        last_series_char = series[-1] if series else ""
+        
+        if first_num_char in DIGIT_TO_LETTER:
+            expected_letter = DIGIT_TO_LETTER[first_num_char]
+            if last_series_char == expected_letter:
+                # Remove the duplicate digit from number
+                number = number[1:]
+                logger.info(f"  [Vehicle] Removed duplicate '{first_num_char}' from number (looks like '{expected_letter}')")
+                fixed = True
+    
+    # Case 4: Check for adjacent similar chars anywhere in boundary regions
+    if not fixed:
+        # Check district-series boundary
+        if district and series:
+            last_d = district[-1]
+            first_s = series[0]
+            if (last_d in DIGIT_TO_LETTER and DIGIT_TO_LETTER[last_d] == first_s) or \
+               (first_s in LETTER_TO_DIGIT and LETTER_TO_DIGIT[first_s] == last_d):
+                # Remove one of them - prefer keeping the structure
+                if len(district) > 1:
+                    district = district[:-1]
+                    logger.info(f"  [Vehicle] Removed duplicate at district-series boundary")
+                else:
+                    series = series[1:]
+                    logger.info(f"  [Vehicle] Removed duplicate at series start")
+                fixed = True
+        
+        # Check series-number boundary
+        if not fixed and series and number:
+            last_s = series[-1]
+            first_n = number[0]
+            if (last_s in LETTER_TO_DIGIT and LETTER_TO_DIGIT[last_s] == first_n) or \
+               (first_n in DIGIT_TO_LETTER and DIGIT_TO_LETTER[first_n] == last_s):
+                # Remove one of them
+                if len(series) > 1:
+                    series = series[:-1]
+                    logger.info(f"  [Vehicle] Removed duplicate at series-number boundary")
+                else:
+                    number = number[1:]
+                    logger.info(f"  [Vehicle] Removed duplicate at number start")
+                fixed = True
+    
+    # Reconstruct the plate
+    result = state + district + series + number
+    
+    # If still oversized and we couldn't fix, log warning
+    if len(result) > 10:
+        if fixed:
+            # Try again recursively
+            logger.info(f"  [Vehicle] Still oversized ({len(result)} chars), trying again...")
+            result = _fix_oversized_vehicle(result)
+        else:
+            logger.warning(f"  [Vehicle] Could not fix plate, still {len(result)} chars: {result}")
+    
+    if result != plate:
+        logger.info(f"  [Vehicle] Fixed: {plate} → {result}")
+    
+    return result
+
+
 def extract_vehicle(text: str, ocr_images: Optional[List[Image.Image]] = None) -> Optional[str]:
     """
     ENHANCED VEHICLE EXTRACTOR - Specifically designed to extract from 
@@ -2076,8 +2606,8 @@ def extract_vehicle(text: str, ocr_images: Optional[List[Image.Image]] = None) -
                 clean = _cleanup_plate_token(candidate)
                 normalized = _normalize_vehicle_ocr_errors(clean)
                 result = normalized if normalized != clean else clean
-                logger.info(f"  [Vehicle] âœ“ Found via labeled pattern: {result}")
-                return result
+                logger.info(f"  [Vehicle] ✓ Found via labeled pattern: {result}")
+                return _fix_oversized_vehicle(result)
     
     # STRATEGY 2: Use structured OCR to find lines with vehicle labels
     if ocr_images:
@@ -2119,8 +2649,8 @@ def extract_vehicle(text: str, ocr_images: Optional[List[Image.Image]] = None) -
                                 clean = _cleanup_plate_token(candidate)
                                 normalized = _normalize_vehicle_ocr_errors(clean)
                                 result = normalized if normalized != clean else clean
-                                logger.info(f"  [Vehicle] âœ“ Found via OCR same-line: {result}")
-                                return result
+                                logger.info(f"  [Vehicle] ✓ Found via OCR same-line: {result}")
+                                return _fix_oversized_vehicle(result)
                     
                     # Check next 2 lines
                     for offset in (1, 2):
@@ -2142,8 +2672,8 @@ def extract_vehicle(text: str, ocr_images: Optional[List[Image.Image]] = None) -
                                         clean = _cleanup_plate_token(candidate)
                                         normalized = _normalize_vehicle_ocr_errors(clean)
                                         result = normalized if normalized != clean else clean
-                                        logger.info(f"  [Vehicle] âœ“ Found via OCR next-line: {result}")
-                                        return result
+                                        logger.info(f"  [Vehicle] ✓ Found via OCR next-line: {result}")
+                                        return _fix_oversized_vehicle(result)
     
     # STRATEGY 3: Conservative global search (last resort)
     logger.info("  [Vehicle] Strategy 3: Conservative global search...")
@@ -2175,14 +2705,14 @@ def extract_vehicle(text: str, ocr_images: Optional[List[Image.Image]] = None) -
         indian_states = [c for c in candidates if re.match(r'^(KA|TN|MH|DL|UP|RJ|GJ|AP|TS|KL|PB|HR)', c)]
         if indian_states:
             result = indian_states[0]
-            logger.info(f"  [Vehicle] âœ“ Found via global search: {result}")
-            return result
+            logger.info(f"  [Vehicle] ✓ Found via global search: {result}")
+            return _fix_oversized_vehicle(result)
         
         result = candidates[0]
-        logger.info(f"  [Vehicle] âœ“ Found via global search: {result}")
-        return result
+        logger.info(f"  [Vehicle] ✓ Found via global search: {result}")
+        return _fix_oversized_vehicle(result)
     
-    logger.info("  [Vehicle] âœ— No valid vehicle number found")
+    logger.info("  [Vehicle] ✗ No valid vehicle number found")
     return None
 
 
@@ -2546,8 +3076,9 @@ def run(
             # too short or obviously wrong
             if isinstance(cand, str) and len(cand.strip()) < 6:
                 try_call_ai = True
-            # suspicious OCR artifacts: consecutive repeated characters (e.g., 'Limiited')
-            if isinstance(cand, str) and re.search(r'([A-Za-z])\1', cand):
+            # suspicious OCR artifacts: consecutive repeated characters (e.g., 'Liiimited')
+            # RELAXED: Require 3+ repeats to avoid flagging valid names like "KANNAPPA"
+            if isinstance(cand, str) and re.search(r'([A-Za-z])\1\1', cand):
                 try_call_ai = True
 
         # Check environment toggle: only use AI for consignee when enabled
@@ -2599,128 +3130,29 @@ def run(
         logger.debug("[AI CONSIGNEE] AI refinement failed", exc_info=True)
 
     # ============================================
-    # PASS 2: Call Delivery Address Extractor
+    # PASS 2: Robust Delivery Address Extraction (Internal)
     # ============================================
     logger.info("\n" + "=" * 60)
-    logger.info("PASS 2: PaddleOCR Focused Scan (Delivery Address Only)")
+    logger.info("PASS 2: Robust Delivery Address Extraction (Internal)")
     logger.info("=" * 60)
     
-    if not _HAS_DELIVERY_EXTRACTOR:
-        logger.warning("âš  delivery_address module not available. Skipping PASS 2.")
-        logger.warning("  Delivery Address will remain NULL.")
-    else:
-        try:
-            os.makedirs(CROPS_FOLDER, exist_ok=True)
-        except Exception as e:
-            logger.warning("âš  Could not create crops folder %s: %s", CROPS_FOLDER, e)
-
-        try:
-            logger.info("Calling delivery-address extractor...")
-            logger.info("  Input PDF: %s", pdf_path)
-            logger.info("  Target DPI: 300")
-            da_result = None
-
-            if _extract_delivery_struct:
-                try:
-                    da_result = _extract_delivery_struct(
-                        pdf_path,
-                        prefer_dpi=300,
-                        poppler_path=poppler,
-                        verbose=False,
-                        save_crops=True,
-                        crops_folder=CROPS_FOLDER
-                    )
-                except TypeError:
-                    logger.debug("extract_delivery_address_struct() doesn't accept save_crops/crops_folder; retrying without those args.")
-                    da_result = _extract_delivery_struct(
-                        pdf_path,
-                        prefer_dpi=300,
-                        poppler_path=poppler,
-                        verbose=False
-                    )
-
-                if isinstance(da_result, dict):
-                    rb = da_result.get("right_box")
-                    cleaned_rb = rb
-                    try:
-                        if isinstance(rb, str):
-                            cleaned_rb = rb.strip()
-                            cleaned_rb = re.sub(r'\s{2,}', ' ', cleaned_rb)
-                            cleaned_rb = re.sub(r'\s*\([^)]*,', '', cleaned_rb).strip()
-                    except Exception:
-                        pass
-                    raw_data["Delivery Address"] = cleaned_rb
-                    logger.info("âœ“ Delivery Address extracted successfully")
-                    if cleaned_rb:
-                        logger.info("  Result: %s", cleaned_rb[:200] + ("..." if len(cleaned_rb) > 200 else ""))
-
-                    crop_path = da_result.get("crop_path") or (da_result.get("crop_paths")[0] if da_result.get("crop_paths") else None)
-                    if crop_path:
-                        try:
-                            crop_path = os.path.normpath(crop_path)
-                        except Exception:
-                            pass
-                        logger.info("Saved debug crop to %s", crop_path)
-                        raw_data["_debug_crop_path"] = crop_path
-                else:
-                    logger.debug("extract_delivery_address_struct returned non-dict result; falling back to v2.")
-                    if _extract_delivery_v2:
-                        da_v2 = _extract_delivery_v2(pdf_path, prefer_dpi=300, poppler_path=poppler)
-                        if da_v2:
-                            if isinstance(da_v2, dict):
-                                rb = da_v2.get("right_box") or da_v2.get("right_box_raw") or da_v2.get("right_box_text")
-                                cleaned = rb
-                                if isinstance(rb, str):
-                                    cleaned = re.sub(r'\s{2,}', ' ', rb).strip()
-                                raw_data["Delivery Address"] = cleaned
-                                logger.info("âœ“ Delivery Address (v2 dict) extracted successfully")
-                                if cleaned:
-                                    logger.info("  Result: %s", cleaned[:200] + ("..." if len(cleaned) > 200 else ""))
-                                crop_path = da_v2.get("crop_path") or (da_v2.get("crop_paths")[0] if da_v2.get("crop_paths") else None)
-                                if crop_path:
-                                    try:
-                                        crop_path = os.path.normpath(crop_path)
-                                    except Exception:
-                                        pass
-                                    logger.info("Saved debug crop to %s", crop_path)
-                                    raw_data["_debug_crop_path"] = crop_path
-                            else:
-                                cleaned = re.sub(r'\s{2,}', ' ', str(da_v2)).strip()
-                                raw_data["Delivery Address"] = cleaned
-                                logger.info("âœ“ Delivery Address (v2) extracted successfully")
-                                if cleaned:
-                                    logger.info("  Result: %s", cleaned[:200] + ("..." if len(cleaned) > 200 else ""))
+    try:
+        # Use Page 1 for delivery address (standard for Format 1)
+        if originals:
+            da_robust = extract_delivery_address_robust(originals[0], page_num=1, debug=True)
+            if da_robust:
+                # Ensure single-line clean output (Address usually comes multiline from OCR)
+                da_robust = da_robust.replace('\n', ', ').strip()
+                raw_data["Delivery Address"] = da_robust
+                logger.info("✓ Delivery Address extracted successfully (Robust)")
             else:
-                if _extract_delivery_v2:
-                    try:
-                        da_v2 = _extract_delivery_v2(pdf_path, prefer_dpi=300, poppler_path=poppler, save_crops=True, crops_folder=CROPS_FOLDER)
-                    except TypeError:
-                        da_v2 = _extract_delivery_v2(pdf_path, prefer_dpi=300, poppler_path=poppler)
-                    if isinstance(da_v2, dict):
-                        rb = da_v2.get("right_box") or da_v2.get("right_box_raw")
-                        cleaned_rb = rb
-                        if isinstance(rb, str):
-                            cleaned_rb = re.sub(r'\s{2,}', ' ', rb).strip()
-                        raw_data["Delivery Address"] = cleaned_rb
-                        crop_path = da_v2.get("crop_path") or (da_v2.get("crop_paths")[0] if da_v2.get("crop_paths") else None)
-                        if crop_path:
-                            try:
-                                crop_path = os.path.normpath(crop_path)
-                            except Exception:
-                                pass
-                            logger.info("Saved debug crop to %s", crop_path)
-                            raw_data["_debug_crop_path"] = crop_path
-                    else:
-                        if isinstance(da_v2, str):
-                            cleaned = re.sub(r'\s{2,}', ' ', da_v2).strip()
-                            raw_data["Delivery Address"] = cleaned
-                            logger.info("âœ“ Delivery Address extracted successfully (v2)")
-                            logger.info("  Result: %s", cleaned[:200] + ("..." if len(cleaned) > 200 else ""))
-                        else:
-                            logger.warning("Delivery address extraction returned unexpected type.")
-        except Exception as e:
-            logger.error("âœ— Delivery Address extraction failed: %s", e, exc_info=True)
-            logger.warning("  Delivery Address will remain NULL in output")
+                logger.warning("⚠ Delivery Address not found via robust method")
+        else:
+             logger.warning("âš  No page images available for delivery address extraction")
+             
+    except Exception as e:
+        logger.error("âœ— Delivery Address extraction failed: %s", e, exc_info=True)
+        logger.warning("  Delivery Address will remain NULL in output")
 
     # ============================================
     # SAVE RAW DATA (Optional)

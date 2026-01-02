@@ -1,0 +1,119 @@
+# Raw OCR Text Extraction
+# PDF: uploads/all problem.pdf
+# Platform: Windows
+# DPI: 300
+# Tesseract: C:\Tesseract-OCR\tesseract.EXE
+# Date: 2025-12-31T11:10:22.671707
+
+============================================================
+PAGE 1
+============================================================
+3 A EWB No. 511887551090 TAX INVOICE Original for Recipient
+EWB Exp. 05-10-2025 23:59:00 UltraTech Cement Limited me P
+
+‘
+ Unit/Depot-Address;ARAKONAM CEMENT WORKS,ULTRATECH CEMENT LIMITED, CHITTERI POST
+ve ; ARAKKONAM,TAMIE NADU,631003
+
+GSTIN: 33A AACL6442LIZI1 CIN : L26940MH2000PLC128420 TAN NO:BLRUOI804F — | HSN Code: 2523 29 30
+
+Invoice No.:8996759141 Plant/Depot Code:6996 Invoice Reference No.:; Date of Issue of Invoice.:04.10.2025
+IRN: 2243{55c7eeb02 104d572493ea8941197cf4 1 5achceci9a5659a6dfa5a8cl69b Driver Mobile:09025820584
+Batch No.; W/M/YY: 40/10/2025 Name of Commodity : Cement
+
+Yes [] No
+
+Name & Address of Recipicnt : Recipient PO No/Date :
+VASU AGENCIES 1137523544/
+
+#26-B,
+
+EAST JONES ROAD Recipient Code : 641052V008
+Place of Supply: CHENNAI
+
+State: TAMIL NADU
+
+StateCode: 33 Segment : TRADE
+GSTIN NO: 33AGMPM7976MI1ZI CUSTOMER
+
+Pett “<arParticulars; “ 7 Quanti
+‘ che iB > eres
+
+ake
+
+Whether Tax is payable under Reverse Charge
+
+Name & Address of Delivery:
+VENKATES
+NO.I,MANIMANGALAM ROAD,
+GUDUVANCHERRYGUDUVANCHERRY
+GUDUVANCHERRY
+Phone Na. : 9840992338
+
+State: TAMIL NADU State Code: 33
+
+“Amount °2 i
+(in ‘Rupees)y:,’
+$6,571.16
+
+Gen Discount
+Basic Price After discount
+CGST
+
+SGST
+
+Round Off
+
+Stan “hey
+
+é Total Invoice‘Value— 97,552.00
+Tax Amount in Words: Rupees Fourteen Thousand Fight Hundred £ighty And Paise Eighty Two Onl
+invoice Amount in Words: Rupees Ninety Seven Thousand Five Hundred Fifty Two Only
+
+Name of Transporter : KSS ROADWAYS L.R.No./RR Date: 04102025 D.O.No & Date: 1137523544 & 04.10.2025
+Vehicle No./Wagon NO.: TN73BY0885 —L.R.No/RR Na.: 6682 D.I.NO.& Date: 6978029148 & 04,10.2025
+
+Certified that the particulars given above are true & correct & the amount indicated E. & 0. E.
+represents the price actually charged and there is no flow of any additional For ULTRATECH CEMENT LIMITED
+
+eration directly or indirectly from the recipient. Digitally Signed by:
+Freight on this Invoice is payable by Ultra Tech Cement Limited @ Rs.621.00 Per MT. (UNIT: :ARAKONAMACESIENN
+cked By WORKS)
+
+We here by confirm that we have received above referred material in good
+condition
+
+Seal: Signature name & Mobile No of Person/Party who
+Date: is receiving the material with rubber stamp
+
+Terms & Condition
+I. In case of Ex-Depat sale the responsibility of company ceases once the material is dclivered to the carrier and Company will
+aot accept any responsibility for shortage, Joss, damage in transit.
+
+2. Payment against this invoice should be made by RTGS/NEFT/ACH/IMPS infavaur of "UltraTech Cement Limited".
+Payment against this Invoice canalso be made by A/c Payee Cheque/DD in favour of "UltraTech Cement Limited" ,
+
+Payment can also be made at our Zonal Offices through RupayDebit Card/UPI- BHIM UPI/UPI QR Code/ BHIM
+
+UPI QR Code in favourof" UltraTcch Cement Limited",
+
+3. If the invoice is not paid within due period as per agreement/PO interest @ 18% P.A, fram the due date shall apply.
+
+4. Goods once delivered will not be taken back.
+
+5, Please ensure that any resale of the material should be done within the MRP printed on the bags.
+
+6. Input Tax reversal on the credit note issued by Company towards discount including any Rate Difference needs ta be
+
+done by you in the same month when such ercdit notes are issued and disclose the same in Periodical GST Return.
+
+7.TDS deducted by you as per Income Tax Act, shall be credited to your account by UltraTech after receipt of TDS
+certificate. Consequential loss, if any will be to your account.
+
+‘Ultratech © Ultratech’
+‘ The Engineer's Choice . The: Engineer's Choice”
+
+** For BIS Certification details sec website:www.bis.gov.in
+for Subject te BANGALORE Jurisdiction
+Registered Office: B-wing,2nd floor,Ahura Centre,Mhahakali caves Road,Andheri(EAST),Mumbai-400093
+

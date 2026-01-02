@@ -1,0 +1,233 @@
+﻿docker : [INFO] ├ó┼ôΓÇ£ Using Tesseract: /usr/bin/tesseract
+At line:1 char:1
++ docker exec wbai_ocr python -c "from engine.extractors.client1_format ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([INFO] ├ó┼ôΓÇ£ ...r/bin/tesseract:Str 
+   ing) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[INFO] ============================================================
+[INFO] PASS 1: Tesseract OCR @ DPI 300 (Optimized for speed)
+[INFO] ============================================================
+[INFO] ├ó┼ôΓÇ£ Rendered 1 page(s) from PDF
+[INFO]   Processing page 1...
+[INFO] ├ó┼ôΓÇ£ OCR completed. Total text length: 35854 characters
+[INFO] 
+Extracting fields from OCR text...
+[INFO]   Invoice No: 6978029148
+[INFO]   Invoice Date: 04.10.2025
+[INFO] [LR EXTRACTION] Full OCR text length: 35854 chars
+[INFO] [LR EXTRACTION] Searching in text: | ADITYA BIRLA EWE No. 511887551090      
+               TAX INVOICE                                 Oricinal for Recinient
+Te BY    EWB Exp. 05-10-2025 23:59:00 UltraTech Cement Limited                     
+                   &                     P
+oa ~ ΓÇ£Unit/Depot-Address;tARAKONAM CEMENT WORKS, ULTRATECH CEMENT LIMITED, 
+CHITTERI POST
+| UntraTech                                                             ARAKKONAM, 
+TAMIL NADU,631003
+GSTIN : 33AAACL6442L1ZH     CIN : L26940MH2000PLC128420      
+[INFO] [LR EXTRACTION] Found L.R./RR section: LRU01804F      HSN Code: 2523 29 30
+Invoice No0.:89%26759141 Plant/Depot Code:6996 Invoice Reference No.:              
+          Date of Issue of Invoice.:04.10.2025
+IRN: 2243{55c7ccb021┬ó4d572493┬óa894
+[INFO] [LR EXTRACTION] Pattern 1 matched: 'L.R.No/RR No.: 6682' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 1 matched: 'L.R.No/RR No.: 6682' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 1 matched: 'L.R.No/RR No.: 6682' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 2 matched: 'L.R.No/RR No.: 6682' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 2 matched: 'L.R.No/RR No.: 6682' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 2 matched: 'L.R.No/RR No.: 6682' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 3 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 3 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 3 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 4 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 4 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 4 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 5 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 5 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 5 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 6 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 6 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 6 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 7 matched: 'RR No.: 6682 ' -> extracted: '6682'
+[INFO] [LR EXTRACTION] Pattern 7 matched: 'RR No.: 6682 ' -> extracted: '6682'
+[INFO] [LR EXTRACTION] Pattern 7 matched: 'RR No.: 6682 ' -> extracted: '6682'
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'LRU01804F      HSN Code: 2523 29 30
+Invoice No0.:8' -> extracted: '6996'
+[INFO] [LR EXTRACTION] Skipping HSN code: 6996
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'L.R.No./RR Date: 04102025           
+D.O.No & Date:' -> extracted: '2025'
+[INFO] [LR EXTRACTION] Skipping 4-digit year: 2025
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'L.R.No/RR Nao.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'LRUO01804F | HSN Code: 2523 29 30
+Invoice No.:8996' -> extracted: '6996'
+[INFO] [LR EXTRACTION] Skipping HSN code: 6996
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'LRUO01804F      HSN Code: 2523 29 30
+IRN: 2243{55c' -> extracted: '6682'
+[INFO] [LR EXTRACTION] Skipping HSN code: 6682
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'LRUO01804F (HSN Code: 2523 29 30
+Invoice No.:89967' -> extracted: '6996'
+[INFO] [LR EXTRACTION] Skipping HSN code: 6996
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'Lr
+Freight on this Invoice is payable by Ultra Tec' -> extracted: '2523'
+[INFO] [LR EXTRACTION] Skipping HSN code: 2523
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'L.R.No./RR Date: 04102025           
+D.0O.No & Date' -> extracted: '2025'
+[INFO] [LR EXTRACTION] Skipping 4-digit year: 2025
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'L.R.No/RR No.: 6682 ' -> extracted: 
+'6682'
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'LRUO1804F |HSN Code: 2523 29 30
+Invoice No.: 18926' -> extracted: '6996'
+[INFO] [LR EXTRACTION] Skipping HSN code: 6996
+[INFO] [LR EXTRACTION] Pattern 8 matched: 'LRUOIS04F  |HSN Code: 2523 29 30
+Invoice No.:89967' -> extracted: '6996'
+[INFO] [LR EXTRACTION] Skipping HSN code: 6996
+[INFO] [LR EXTRACTION] Successfully extracted: 6682
+[INFO]   L.R. No: 6682
+[INFO] [CONSIGNEE] Searching for recipient/consignee in 387 lines
+[INFO] [CONSIGNEE] Found header at line 9: Name & Address of Recipient :           
+                   Recipient PO No/Date :                  N
+[INFO] [CONSIGNEE] Checking line 10: VASU AGENCIES                                 
+                 1137523544/                          
+[INFO] [CONSIGNEE] Checking line 11: #26-B,                                        
+                                                      
+[INFO] [CONSIGNEE] Line 11 contains stop-indicator but looks company-like, 
+accepting: #26-B,                                                                  
+                                                                     
+NO.I,MANIMANGALAM ROAD,
+[INFO] [CONSIGNEE] Checking line 12: EAST JONES ROAD                               
+   Recipient Code ;: 641052V008        GUDUVANCHERRYGU
+[INFO] [CONSIGNEE] Line 12 contains stop-indicator but looks company-like, 
+accepting: EAST JONES ROAD                                  Recipient Code ;: 
+641052V008        GUDUVANCHERRYGUDUVANCHERRY
+[INFO] [CONSIGNEE] Extracted (combined lines): VASU AGENCIES
+[INFO]   Consignee: VASU AGENCIES
+[INFO]   Consignor: UltraTech Cement Limited
+[INFO]   Weight: 13.600 (method: quantity_ocr)
+[INFO] [MATERIAL] Searching for material code in text (length: 35854)
+[INFO] [MATERIAL] Found 'PPC' at position 2302: 'PPC'
+[INFO] [MATERIAL] Best match: 'PPC' (method: global_regex)
+[INFO]   Content Name: PPC
+[INFO] [RATE] Starting rate extraction from text (length: 35854)
+[INFO] [RATE] Pattern matched (@ Rs.XXX Per MT): '@ Rs.621.00 Per MT'
+[INFO] [RATE] Raw amount captured: '621.00'
+[INFO] [RATE] After normalization: '621.00'
+[INFO] [RATE] Final rate: 621.00
+[INFO]   Rate: 621.00
+[INFO]   Despatch City: ARAKKONAM (found 2 cities in invoice)
+[INFO]   Destination: GUDUVANCHERRY
+[INFO]   E-Way Bill No: 115118875510
+[INFO]   E-Way Bill Expiry: 05-10-2025 23:59:00
+[INFO]   [Vehicle] Strategy 1: Searching for labeled patterns...
+[INFO]   [Vehicle] Normalizing: 'TN73BY0885' (len=10)
+[INFO]   [Vehicle] Checking 118 pattern: plate[2:5]='73B', plate[5]='Y'
+[INFO]   [Vehicle] No 118 fix needed
+[INFO]   [Vehicle] Γ£ô Found via labeled pattern: TN73BY0885
+[INFO]   Vehicle No: TN73BY0885
+[INFO]   IRN: 2243
+[INFO]   Driver Mobile: 9840992338
+[INFO]   Goods Type: BAG
+[INFO] 
+============================================================
+[INFO] PASS 2: Robust Delivery Address Extraction (Internal)
+[INFO] ============================================================
+[INFO] [Delivery] Snapping left crop to vertical line at x=371
+[INFO] [Delivery] Snapping right crop to vertical line at x=1340
+[INFO]     [Word Scan] 'venkates' -> 'venkates' (VENKATES) (Y=13)
+[INFO]     [Word Scan] 'no.i,manimangalam' -> 'noimanimangalam' 
+(NO.I,MANIMANGALAM) (Y=57)
+[INFO]     [Word Scan] 'road,' -> 'road' (ROAD,) (Y=57)
+[INFO]     [Word Scan] 'guduvancherryguduvancherry' -> 
+'guduvancherryguduvancherry' (GUDUVANCHERRYGUDUVANCHERRY) (Y=105)
+[INFO]     [Word Scan] 'guduvancherry' -> 'guduvancherry' (GUDUVANCHERRY) (Y=154)
+[INFO]     [Word Scan] '|' -> '' (|) (Y=160)
+[INFO]     [Word Scan] 'phone' -> 'phone' (Phone) (Y=207)
+[INFO]   [Delivery] VISUAL STOP MATCH: 'phone' at Y=207
+[INFO]     [Word Scan] 'ne.' -> 'ne' (Ne.) (Y=207)
+[INFO]     [Word Scan] ':' -> '' (:) (Y=214)
+[INFO]     [Word Scan] '9840992338' -> '9840992338' (9840992338) (Y=203)
+[INFO]     [Word Scan] 'state:tamil' -> 'statetamil' (State:TAMIL) (Y=249)
+[INFO]     [Word Scan] 'nadu' -> 'nadu' (NADU) (Y=245)
+[INFO]     [Word Scan] 'state' -> 'state' (State) (Y=244)
+[INFO]     [Word Scan] 'code:' -> 'code' (Code:) (Y=244)
+[INFO]     [Word Scan] '33' -> '33' (33) (Y=245)
+[INFO]     [Word Scan] 'l' -> 'l' (L) (Y=415)
+[INFO]     [Word Scan] 'bt' -> 'bt' (bt) (Y=415)
+[INFO]     [Word Scan] 'sw:)(inΓÇÿrupees).' -> 'swinrupees' (sw:)(InΓÇÿRupees).) 
+(Y=414)
+[INFO]     [Word Scan] '-' -> '' (-) (Y=423)
+[INFO]     [Word Scan] '(in' -> 'in' ((In) (Y=410)
+[INFO]     [Word Scan] 'rupees):,ΓÇ¥' -> 'rupees' (Rupees):,ΓÇ¥) (Y=407)
+[INFO]     [Word Scan] '*' -> '' (*) (Y=408)
+[INFO]     [Word Scan] '1,000' -> '1000' (1,000) (Y=475)
+[INFO]     [Word Scan] 'mt' -> 'mt' (MT) (Y=479)
+[INFO]     [Word Scan] '6,659.32' -> '665932' (6,659.32) (Y=470)
+[INFO]     [Word Scan] '86,571.16ΓÇÿ' -> '8657116' (86,571.16ΓÇÿ) (Y=470)
+[INFO]   [Delivery] FINAL CUT Y: 202 (Original H: 535)
+[INFO] [Delivery] Saved debug crop to c:\Users\avin4\Desktop\wbai_doc_extractor_eng
+ine-maincopy\gc_crops_verify\delivery_debug_f1/page_1_delivery_robust.png
+[INFO] [Delivery] Extracted Robust: YENKATES, NO.I,MANIMANGALAM ROAD,, 
+GUDUVANCHERRYGUDUVANCHERRY, GUDUVANCHERRY 1
+[INFO] Γ£ô Delivery Address extracted successfully (Robust)
+[INFO] 
+============================================================
+[INFO] AI REFINEMENT: Skipped (using direct extraction)
+[INFO] ============================================================
+[INFO]   All fields extracted directly from OCR
+[INFO]   Delivery Address formatted by AI (via delivery_address.py)
+[INFO] 
+============================================================
+[INFO] DATA TRANSFORMATION: Checking database mappings...
+[INFO] ============================================================
+[INFO] ├ó┼ôΓÇ£ No data transformations needed
+[INFO] 
+============================================================
+[INFO] EXTRACTION COMPLETE
+[INFO] ============================================================
+[INFO] Fields extracted: 22/22
+{
+  "Consignment No": "6682",
+  "Source": "ARAKKONAM",
+  "Destination": "GUDUVANCHERRY",
+  "E-Way Bill No": "115118875510",
+  "E-Way Bill Date": "04.10.2025",
+  "E-Way Bill Valid Upto": "05-10-2025 23:59:00",
+  "Consignor": "UltraTech Cement Limited",
+  "Consignee": "VASU AGENCIES",
+  "Billing Party": "VASU AGENCIES",
+  "Delivery Address": "YENKATES, NO.I,MANIMANGALAM ROAD,, GUDUVANCHERRYGUDUVANCHERRY, GUDUVANCHERRY 1",
+  "Vehicle": "TN73BY0885",
+  "Driver Mobile": "9840992338",
+  "Date (ERP entry date)": "04.10.2025",
+  "Invoice No": "6978029148",
+  "Invoice Date": "04.10.2025",
+  "Content Name (Goods Name)": "PPC",
+  "Actual Weight": "13.600",
+  "E-Way Bill No (Goods)": "115118875510",
+  "Rate": "621.00",
+  "IRN": "2243",
+  "GST Type": "Unregistered",
+  "goods_type": "BAG"
+}

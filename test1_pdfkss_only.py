@@ -12,7 +12,7 @@ print("TEST 1: PDFKSS ONLY")
 print(f"Started: {datetime.now().strftime('%H:%M:%S')}")
 print("="*70)
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 pdfkss = r'c:\Users\avin4\Desktop\boostentryai ui code\pdfkss\1.pdf'
 

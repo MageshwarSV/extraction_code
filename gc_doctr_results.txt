@@ -1,0 +1,31 @@
+======================================================================
+docTR GC Number Extraction Results
+======================================================================
+
+
+[1] PDF: ilovepdf_merged (1).pdf
+--------------------------------------------------
+  Page 1: CONSIGNMENT
+    ✓ GC Number: 14810
+  Page 2: INVOICE (skipped)
+
+[2] PDF: ilovepdf_merged (2).pdf
+--------------------------------------------------
+  Page 1: INVOICE (skipped)
+  Page 2: INVOICE (skipped)
+
+[3] PDF: ilovepdf_merged.pdf
+--------------------------------------------------
+  Page 1: INVOICE (skipped)
+  Page 2: INVOICE (skipped)
+
+======================================================================
+SUMMARY
+======================================================================
+Total consignment pages tested: 1
+  ✓ GC found: 1
+  ✗ GC not found: 0
+  ⚠ Errors: 0
+
+Detailed Results:
+  ilovepdf_merged (1).pdf Page 1: 14810 (success)

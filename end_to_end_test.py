@@ -47,7 +47,7 @@ print(f"  Time: {step1_time:.2f}s")
 
 # STEP 2: Extract data (client1_format1.py)
 print("\n[STEP 2] Running extraction (client1_format1.py)...")
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 start = time.time()
 result = run(pdf_path)

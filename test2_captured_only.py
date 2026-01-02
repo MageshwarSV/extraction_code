@@ -12,7 +12,7 @@ print("TEST 2: OPTIMIZED CAPTURED IMAGE")
 print(f"Started: {datetime.now().strftime('%H:%M:%S')}")
 print("="*70)
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 captured = r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\optimized_test.pdf'
 

@@ -1,4 +1,4 @@
-from engine.extractors.client1_format1 import extract_consignee
+from engine.extractors.odsfhiaclient1_format11_format1 import extract_consignee
 
 sample = '''Name & Address of Recipient :                      Recipient PO No/Date :             Name & Address
 VASU AGENCIES                                 1137432035/                           AKT MUTHU,

@@ -4,7 +4,7 @@ import os
 # Add project root to path
 sys.path.append(os.getcwd())
 
-from engine.extractors.client1_format1 import extract_consignee
+from engine.extractors.odsfhiaclient1_format11_format1 import extract_consignee
 
 test_cases = [
     """Name & Address of Recipient :

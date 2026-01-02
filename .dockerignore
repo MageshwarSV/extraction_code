@@ -1,6 +1,62 @@
-venv/
+
+# Python cache and environments
 __pycache__/
 *.pyc
-.git
+*.pyo
+*.pyd
+venv/
+.env/
+
+# Logs and debug/test output
+*.log
+*.txt
+*.out
+*.bak
+*.tmp
+*.swp
+*.swo
+
+# PDFs and large data files
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.tiff
+*.bmp
+*.gif
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+
+# Test data and results
+*.json
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.db
+*.sqlite
+*.h5
+*.parquet
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE and VCS
+.idea/
+.vscode/
+.git/
 .gitignore
+
+# Exclude uploads and temp
 uploads/*.tmp
+
+# Only include essential code and config
+!engine/
+!app/
+!start.sh
+!Dockerfile
+!requirements.txt

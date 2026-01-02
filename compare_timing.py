@@ -3,7 +3,7 @@ import os, sys, time, fitz
 from datetime import datetime
 
 sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 pdfkss_file = r'c:\Users\avin4\Desktop\boostentryai ui code\pdfkss\1.pdf'
 test_file = r'c:\Users\avin4\Desktop\boostentryai ui code\test\1234yyy.pdf'

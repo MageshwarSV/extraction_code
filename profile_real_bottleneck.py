@@ -9,7 +9,7 @@ import sys
 import time
 sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 # Test with uploaded camera image
 pdf_path = r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\camera_preprocessed.pdf'

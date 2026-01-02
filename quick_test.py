@@ -7,7 +7,7 @@ sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
 print("Starting extraction...")
 start = datetime.now()
 
-from engine.extractors.client1 import run
+from engine.extractors.odsfhiaclient1_format1 import run
 
 result = run(r'c:\Users\avin4\Desktop\boostentryai ui code\1234567890120.pdf')
 

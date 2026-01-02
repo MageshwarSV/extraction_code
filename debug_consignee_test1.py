@@ -4,7 +4,7 @@ import os
 import fitz
 
 sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
-from engine.extractors.client1_format1 import extract_consignee
+from engine.extractors.odsfhiaclient1_format11_format1 import extract_consignee
 
 pdf_path = r'c:\Users\avin4\Desktop\boostentryai ui code\test\test1.pdf'
 

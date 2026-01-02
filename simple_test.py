@@ -14,7 +14,7 @@ print(f"Text layer: {len(text)} chars")
 print(f"Has text layer: {'YES' if len(text) > 100 else 'NO'}")
 doc.close()
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 print(f"Start: {datetime.now().strftime('%H:%M:%S')}")
 start = time.time()
 r1 = run(pdfkss)

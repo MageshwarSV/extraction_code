@@ -1,0 +1,53 @@
+﻿============================================================
+ANALYZING E-WAY BILL EXTRACTION BEHAVIOR
+============================================================
+
+============================================================
+SEARCHING FOR E-WAY BILL NUMBER OCCURRENCES
+============================================================
+
+Local 12-digit numbers found: ['511887551090']
+Docker 12-digit numbers found: ['511887551090']
+
+============================================================
+ANALYSIS: LOCAL (Windows)
+============================================================
+
+[Line 10] Found EWB keyword:
+  Original: 3 A EWB No. 511887551090 TAX INVOICE Original for Recipient
+  Digits only: 3511887551090
+  Length: 13
+  Possible 12-digit sequences:
+    [0]: 351188755109
+    [1]: 511887551090
+
+[Line 11] Found EWB keyword:
+  Original: EWB Exp. 05-10-2025 23:59:00 UltraTech Cement Limited me P
+  Digits only: 05102025235900
+  Length: 14
+  Possible 12-digit sequences:
+    [0]: 051020252359
+    [1]: 510202523590
+    [2]: 102025235900
+    ... (3 total possibilities)
+
+============================================================
+ANALYSIS: DOCKER (Linux)
+============================================================
+
+[Line 10] Found EWB keyword:
+  Original: LA EWB No. 511887551090 TAX INVOICE Original for Recinient
+  Digits only: 511887551090
+  Length: 12
+  Possible 12-digit sequences:
+    [0]: 511887551090
+
+[Line 11] Found EWB keyword:
+  Original: EWB Exp. 05-10202523:59:00  UltraTech Cement Limited nie P
+  Digits only: 05102025235900
+  Length: 14
+  Possible 12-digit sequences:
+    [0]: 051020252359
+    [1]: 510202523590
+    [2]: 102025235900
+    ... (3 total possibilities)

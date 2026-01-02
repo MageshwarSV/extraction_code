@@ -4,7 +4,7 @@ import os
 # Add project root to path
 sys.path.append(os.getcwd())
 
-from engine.extractors.client1_format1 import extract_consignee
+from engine.extractors.(working)client1_format1 import extract_consignee
 
 text = "Name & Address of Recipient : AVS Tech Building Solutions I IPL/HSR/2526/108/25.10.2025 AVS Tech Building Solutions In Pvt Ltd"
 

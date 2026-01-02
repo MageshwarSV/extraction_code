@@ -5,7 +5,7 @@ from datetime import datetime
 
 sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 test_folder = r'c:\Users\avin4\Desktop\boostentryai ui code\test'
 output_file = os.path.join(test_folder, 'ewb_extraction_results.txt')

@@ -14,7 +14,7 @@ logging.basicConfig(
     format='[%(levelname)s] %(message)s'
 )
 
-from engine.extractors.client1_format1 import run
+from engine.extractors.odsfhiaclient1_format11_format1 import run
 
 print("="*70)
 print("DETAILED EXECUTION COMPARISON")

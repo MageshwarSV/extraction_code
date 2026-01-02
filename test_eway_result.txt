@@ -1,0 +1,46 @@
+﻿
+============================================================
+TESTING: LOCAL (Windows)
+============================================================
+Text length: 4061 chars
+
+Strategy 1 - Direct \b(\d12)\b pattern:
+  Found: ['511887551090']
+
+Strategy 2 - Line-by-line with EWB keyword:
+  Line 10: 3 A EWB No. 511887551090 TAX INVOICE Original for Recipient...
+    -> Same line exact 12-digit: 511887551090
+    -> Cleaned (digits only): 3511887551090
+    -> Cleaned length: 13
+    -> First 12 digits: 351188755109
+  Line 11: EWB Exp. 05-10-2025 23:59:00 UltraTech Cement Limited me P...
+    -> Cleaned (digits only): 05102025235900
+    -> Cleaned length: 14
+    -> First 12 digits: 051020252359
+
+============================================================
+TESTING: DOCKER (Linux)
+============================================================
+Text length: 4054 chars
+
+Strategy 1 - Direct \b(\d12)\b pattern:
+  Found: ['511887551090']
+
+Strategy 2 - Line-by-line with EWB keyword:
+  Line 10: LA EWB No. 511887551090 TAX INVOICE Original for Recinient...
+    -> Same line exact 12-digit: 511887551090
+    -> Cleaned (digits only): 511887551090
+    -> Cleaned length: 12
+    -> First 12 digits: 511887551090
+  Line 11: EWB Exp. 05-10202523:59:00  UltraTech Cement Limited nie P...
+    -> Cleaned (digits only): 05102025235900
+    -> Cleaned length: 14
+    -> First 12 digits: 051020252359
+
+============================================================
+FINAL RESULTS:
+============================================================
+Local extraction:  511887551090
+Docker extraction: 511887551090
+
+Γ£ô SAME RESULT - Both extractions match!

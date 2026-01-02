@@ -1,0 +1,20 @@
+{
+    "Branch": "branch",
+    "Date": "invoice_date",
+    "ConsignmentNo": "gc_number",
+    "Source": "branch",
+    "Destination": "destination",
+    "Vehicle": "vehicle_no",
+    "EWayBillNo": "eway_bill_no",
+    "Consignor": "consignor",
+    "Consignee": "consignee",
+    "GSTType": "gst_no",
+    "Delivery Address": "delivery_address",
+    "Invoice No": "invoice_number",
+    "ContentName": "product_category",
+    "ActualWeight": "actual_weight",
+    "E-WayBill ValidUpto": "eway_date",
+    "Invoice Date": "invoice_date",
+    "E-Way Bill Date": "invoice_date",
+    "E-Way Bill NO": "eway_bill_no"
+}
