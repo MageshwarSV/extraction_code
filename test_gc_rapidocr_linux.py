@@ -1,21 +1,27 @@
 #!/usr/bin/env python
 """
-GC Number Extraction Test Script - Using docTR (No AVX Required)
+GC Number Extraction Test Script - Using RapidOCR ONNX (NO AVX REQUIRED)
+Linux Server Version
 
-This script tests docTR OCR for extracting GC numbers from Format 3 consignment pages.
-docTR uses TensorFlow CPU backend which does NOT require AVX/AVX2.
+RapidOCR with ONNX Runtime does NOT require AVX - it falls back to SSE instructions.
+This makes it compatible with older CPUs.
 
 Installation:
-    pip install python-doctr tensorflow-cpu
+    pip install rapidocr-onnxruntime
 """
 
 import sys
 import os
 import re
-from typing import Optional, Tuple
+from typing import Optional
 import logging
 
-sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
+# Linux paths
+UPLOADS_DIR = "/root/wbai_doc_extractor_engine-maincopy/uploads"
+OUTPUT_FILE = "/root/wbai_doc_extractor_engine-maincopy/uploads/gc_rapidocr_results.txt"
+CROP_DIR = "/root/wbai_doc_extractor_engine-maincopy/uploads"
+
+sys.path.insert(0, '/root/wbai_doc_extractor_engine-maincopy')
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -26,32 +32,31 @@ from pdf2image import convert_from_path
 import pytesseract
 from pytesseract import Output
 
-# docTR imports
+# RapidOCR imports
 try:
-    from doctr.io import DocumentFile
-    from doctr.models import ocr_predictor
+    from rapidocr_onnxruntime import RapidOCR
     import numpy as np
     from PIL import Image
-    HAS_DOCTR = True
-    logger.info("✓ docTR available")
+    HAS_RAPIDOCR = True
+    logger.info("✓ RapidOCR ONNX available")
 except ImportError as e:
-    HAS_DOCTR = False
-    logger.warning(f"✗ docTR not available: {e}")
-    logger.warning("Install with: pip install python-doctr tensorflow-cpu")
+    HAS_RAPIDOCR = False
+    logger.warning(f"✗ RapidOCR not available: {e}")
+    logger.warning("Install with: pip install rapidocr-onnxruntime")
 
 
-# Initialize docTR model once
-_doctr_model = None
+# Initialize RapidOCR once
+_rapid_ocr = None
 
 
-def _get_doctr_model():
-    """Get or initialize docTR model"""
-    global _doctr_model
-    if _doctr_model is None:
-        logger.info("[docTR] Loading OCR model (first time may take a moment)...")
-        _doctr_model = ocr_predictor(det_arch='db_resnet50', reco_arch='crnn_vgg16_bn', pretrained=True)
-        logger.info("[docTR] Model loaded successfully")
-    return _doctr_model
+def _get_rapid_ocr():
+    """Get or initialize RapidOCR with ONNX backend"""
+    global _rapid_ocr
+    if _rapid_ocr is None:
+        logger.info("[RapidOCR] Loading OCR model...")
+        _rapid_ocr = RapidOCR()
+        logger.info("[RapidOCR] Model loaded successfully")
+    return _rapid_ocr
 
 
 def _find_gc_label_position(rotated, top_percent=0.50):
@@ -87,14 +92,13 @@ def _find_gc_label_position(rotated, top_percent=0.50):
     return None, top_region
 
 
-def _extract_gc_with_doctr(crop_image) -> Optional[str]:
-    """Extract GC number using docTR"""
-    if not HAS_DOCTR:
+def _extract_gc_with_rapidocr(crop_image, pdf_name="", page_num=0, rotation=0) -> Optional[str]:
+    """Extract GC number using RapidOCR ONNX"""
+    if not HAS_RAPIDOCR:
         return None
     
     try:
         import cv2
-        import tempfile
         
         # Convert PIL to numpy
         img_np = np.array(crop_image)
@@ -108,64 +112,58 @@ def _extract_gc_with_doctr(crop_image) -> Optional[str]:
         # Preprocessing - scale up for better OCR
         gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         
-        # Convert back to RGB (docTR expects 3 channels)
+        # Convert back to RGB (RapidOCR expects 3 channels)
         rgb = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
         
-        # Save to temporary file (docTR needs file path)
-        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
-            tmp_path = tmp.name
-            cv2.imwrite(tmp_path, cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+        # Get RapidOCR
+        ocr = _get_rapid_ocr()
         
-        # Get docTR model
-        model = _get_doctr_model()
-        
-        # Run OCR using file path
-        doc = DocumentFile.from_images(tmp_path)
-        result = model(doc)
-        
-        # Delete temp file
-        os.remove(tmp_path)
+        # Run OCR
+        result, elapse = ocr(rgb)
         
         # Extract text
         all_text = ""
-        for page in result.pages:
-            for block in page.blocks:
-                for line in block.lines:
-                    for word in line.words:
-                        all_text += word.value + " "
+        if result:
+            for line in result:
+                # RapidOCR returns: [box, text, confidence]
+                if len(line) >= 2:
+                    text = line[1]
+                    conf = float(line[2]) if len(line) > 2 else 0
+                    all_text += text + " "
+                    logger.info(f"[RapidOCR] Detected: '{text}' (conf: {conf:.2f})")
         
-        logger.info(f"[docTR] Raw text: {all_text.strip()}")
+        logger.info(f"[RapidOCR] Raw text: {all_text.strip()}")
         
         # Look for 5-digit numbers
         digits = re.sub(r'\D', '', all_text)
         
         if len(digits) == 5:
-            logger.info(f"[docTR] Found GC: {digits}")
+            logger.info(f"[RapidOCR] Found GC: {digits}")
             return digits
         
         # Try to find 5-digit pattern starting with 1
         if len(digits) >= 4:
             match = re.search(r'1\d{4}', digits)
             if match:
-                logger.info(f"[docTR] Found GC (1xxxx pattern): {match.group(0)}")
+                logger.info(f"[RapidOCR] Found GC (1xxxx pattern): {match.group(0)}")
                 return match.group(0)
         
-        logger.warning(f"[docTR] No valid GC found in: {digits}")
+        logger.warning(f"[RapidOCR] No valid GC found in: {digits}")
         
     except Exception as e:
-        logger.error(f"[docTR] Error: {e}")
+        logger.error(f"[RapidOCR] Error: {e}")
     
     return None
 
 
-def extract_gc_with_doctr(page_image) -> Optional[str]:
+def extract_gc_with_rapidocr(page_image, pdf_name="", page_num=0) -> Optional[str]:
     """
     Main extraction function - tries rotations in order: 90° → 180° → 270° → 0°
     
     Logic:
     1. Try rotation 90° first
     2. Use Tesseract to pre-check if "CONSIGNMENT" is in the page
-    3. If found, extract GC number with docTR
+    3. If found, extract GC number with RapidOCR
     4. If not found or GC not extracted, try next rotation
     """
     
@@ -173,7 +171,7 @@ def extract_gc_with_doctr(page_image) -> Optional[str]:
     rotation_order = [90, 180, 270, 0]
     
     for rotation in rotation_order:
-        logger.info(f"[docTR] Trying rotation {rotation}°")
+        logger.info(f"[RapidOCR] Trying rotation {rotation}°")
         
         if rotation == 0:
             rotated = page_image
@@ -188,16 +186,16 @@ def extract_gc_with_doctr(page_image) -> Optional[str]:
             is_consignment = False
         
         if not is_consignment:
-            logger.info(f"[docTR] No CONSIGNMENT found at rotation {rotation}°, skipping...")
+            logger.info(f"[RapidOCR] No CONSIGNMENT found at rotation {rotation}°, skipping...")
             continue
         
-        logger.info(f"[docTR] ✓ CONSIGNMENT found at rotation {rotation}°")
+        logger.info(f"[RapidOCR] ✓ CONSIGNMENT found at rotation {rotation}°")
         
         # Find G.C.No label position
         gc_pos, top_region = _find_gc_label_position(rotated)
         
         if gc_pos:
-            logger.info(f"[docTR] Found '{gc_pos['word']}' at ({gc_pos['x']}, {gc_pos['y']}) with rotation {rotation}°")
+            logger.info(f"[RapidOCR] Found '{gc_pos['word']}' at ({gc_pos['x']}, {gc_pos['y']}) with rotation {rotation}°")
             
             # Crop the number area (with bounds checking)
             crop_x1 = max(0, gc_pos['x'] + gc_pos['w'] - 30)
@@ -207,58 +205,62 @@ def extract_gc_with_doctr(page_image) -> Optional[str]:
             
             crop = top_region.crop((crop_x1, crop_y1, crop_x2, crop_y2))
             
-            # Save crop for debugging
-            crop.save(f"gc_crop_doctr_{rotation}.png")
+            # Save crop for debugging - in uploads folder
+            safe_name = re.sub(r'[^\w\-.]', '_', pdf_name)
+            crop_path = os.path.join(CROP_DIR, f"gc_crop_{safe_name}_p{page_num}_r{rotation}.png")
+            crop.save(crop_path)
+            logger.info(f"[RapidOCR] Saved crop: {crop_path}")
             
-            # Use docTR
-            gc_num = _extract_gc_with_doctr(crop)
+            # Use RapidOCR
+            gc_num = _extract_gc_with_rapidocr(crop, pdf_name, page_num, rotation)
             if gc_num:
-                logger.info(f"[docTR] ✓ GC Number found at rotation {rotation}°: {gc_num}")
+                logger.info(f"[RapidOCR] ✓ GC Number found at rotation {rotation}°: {gc_num}")
                 return gc_num
         else:
             # Fallback: use fixed position if label not found
-            logger.info(f"[docTR] Label not found at {rotation}°, trying fixed position")
+            logger.info(f"[RapidOCR] Label not found at {rotation}°, trying fixed position")
             try:
                 crop = rotated.crop((2400, 450, 3509, 850))
-                crop.save(f"gc_crop_doctr_{rotation}_fixed.png")
-                gc_num = _extract_gc_with_doctr(crop)
+                safe_name = re.sub(r'[^\w\-.]', '_', pdf_name)
+                crop_path = os.path.join(CROP_DIR, f"gc_crop_{safe_name}_p{page_num}_r{rotation}_fixed.png")
+                crop.save(crop_path)
+                
+                gc_num = _extract_gc_with_rapidocr(crop, pdf_name, page_num, rotation)
                 if gc_num:
-                    logger.info(f"[docTR] ✓ GC Number found at fixed position, rotation {rotation}°: {gc_num}")
+                    logger.info(f"[RapidOCR] ✓ GC Number found at fixed position, rotation {rotation}°: {gc_num}")
                     return gc_num
             except Exception as e:
-                logger.warning(f"[docTR] Fixed position crop failed: {e}")
+                logger.warning(f"[RapidOCR] Fixed position crop failed: {e}")
     
     return None
 
 
 def test_on_pdfs():
-    """Test docTR GC extraction on all PDFs in uploads folder"""
+    """Test RapidOCR GC extraction on all PDFs in uploads folder"""
     
-    if not HAS_DOCTR:
-        print("\n❌ docTR is not installed. Install with: pip install python-doctr tensorflow-cpu")
+    if not HAS_RAPIDOCR:
+        print("\n❌ RapidOCR is not installed. Install with: pip install rapidocr-onnxruntime")
         return
     
-    uploads_dir = r"c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\uploads"
-    output_file = r"c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\gc_doctr_results.txt"
-    
     # Get all PDFs in uploads folder
-    pdf_files = [f for f in os.listdir(uploads_dir) if f.lower().endswith('.pdf')]
+    pdf_files = [f for f in os.listdir(UPLOADS_DIR) if f.lower().endswith('.pdf')]
     
     print("\n" + "=" * 70)
-    print("Testing docTR OCR for GC Number Extraction")
+    print("Testing RapidOCR (ONNX - NO AVX REQUIRED) for GC Number Extraction")
     print(f"Total PDFs found: {len(pdf_files)}")
-    print(f"Output file: {output_file}")
+    print(f"Uploads folder: {UPLOADS_DIR}")
+    print(f"Output file: {OUTPUT_FILE}")
     print("=" * 70)
     
     results = []
     all_output = []
     all_output.append("=" * 70)
-    all_output.append("docTR GC Number Extraction Results")
+    all_output.append("RapidOCR GC Number Extraction Results (Linux Server)")
     all_output.append("=" * 70)
     all_output.append("")
     
     for pdf_idx, pdf_name in enumerate(sorted(pdf_files), 1):
-        pdf_path = os.path.join(uploads_dir, pdf_name)
+        pdf_path = os.path.join(UPLOADS_DIR, pdf_name)
         
         print(f"\n[{pdf_idx}/{len(pdf_files)}] 📄 Processing: {pdf_name}")
         all_output.append(f"\n[{pdf_idx}] PDF: {pdf_name}")
@@ -289,7 +291,7 @@ def test_on_pdfs():
                     print(f"  Page {page_num}: CONSIGNMENT page detected")
                     all_output.append(f"  Page {page_num}: CONSIGNMENT")
                     
-                    gc_number = extract_gc_with_doctr(page)
+                    gc_number = extract_gc_with_rapidocr(page, pdf_name, page_num)
                     
                     if gc_number:
                         print(f"    ✓ GC Number: {gc_number}")
@@ -333,10 +335,10 @@ def test_on_pdfs():
         all_output.append(line)
     
     # Save to file
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         f.write('\n'.join(all_output))
     
-    print(f"\n✓ Results saved to: {output_file}")
+    print(f"\n✓ Results saved to: {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

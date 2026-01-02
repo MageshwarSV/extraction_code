@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
 GC Number Extraction Test Script - Using docTR (No AVX Required)
+Linux Server Version
 
 This script tests docTR OCR for extracting GC numbers from Format 3 consignment pages.
 docTR uses TensorFlow CPU backend which does NOT require AVX/AVX2.
@@ -12,10 +13,15 @@ Installation:
 import sys
 import os
 import re
-from typing import Optional, Tuple
+from typing import Optional
 import logging
 
-sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
+# Linux paths
+UPLOADS_DIR = "/root/wbai_doc_extractor_engine-maincopy/uploads"
+OUTPUT_FILE = "/root/wbai_doc_extractor_engine-maincopy/uploads/gc_doctr_results.txt"
+CROP_DIR = "/root/wbai_doc_extractor_engine-maincopy/uploads"
+
+sys.path.insert(0, '/root/wbai_doc_extractor_engine-maincopy')
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -87,7 +93,7 @@ def _find_gc_label_position(rotated, top_percent=0.50):
     return None, top_region
 
 
-def _extract_gc_with_doctr(crop_image) -> Optional[str]:
+def _extract_gc_with_doctr(crop_image, pdf_name="", page_num=0, rotation=0) -> Optional[str]:
     """Extract GC number using docTR"""
     if not HAS_DOCTR:
         return None
@@ -158,7 +164,7 @@ def _extract_gc_with_doctr(crop_image) -> Optional[str]:
     return None
 
 
-def extract_gc_with_doctr(page_image) -> Optional[str]:
+def extract_gc_with_doctr(page_image, pdf_name="", page_num=0) -> Optional[str]:
     """
     Main extraction function - tries rotations in order: 90° → 180° → 270° → 0°
     
@@ -207,11 +213,14 @@ def extract_gc_with_doctr(page_image) -> Optional[str]:
             
             crop = top_region.crop((crop_x1, crop_y1, crop_x2, crop_y2))
             
-            # Save crop for debugging
-            crop.save(f"gc_crop_doctr_{rotation}.png")
+            # Save crop for debugging - in uploads folder
+            safe_name = re.sub(r'[^\w\-.]', '_', pdf_name)
+            crop_path = os.path.join(CROP_DIR, f"gc_crop_{safe_name}_p{page_num}_r{rotation}.png")
+            crop.save(crop_path)
+            logger.info(f"[docTR] Saved crop: {crop_path}")
             
             # Use docTR
-            gc_num = _extract_gc_with_doctr(crop)
+            gc_num = _extract_gc_with_doctr(crop, pdf_name, page_num, rotation)
             if gc_num:
                 logger.info(f"[docTR] ✓ GC Number found at rotation {rotation}°: {gc_num}")
                 return gc_num
@@ -220,8 +229,11 @@ def extract_gc_with_doctr(page_image) -> Optional[str]:
             logger.info(f"[docTR] Label not found at {rotation}°, trying fixed position")
             try:
                 crop = rotated.crop((2400, 450, 3509, 850))
-                crop.save(f"gc_crop_doctr_{rotation}_fixed.png")
-                gc_num = _extract_gc_with_doctr(crop)
+                safe_name = re.sub(r'[^\w\-.]', '_', pdf_name)
+                crop_path = os.path.join(CROP_DIR, f"gc_crop_{safe_name}_p{page_num}_r{rotation}_fixed.png")
+                crop.save(crop_path)
+                
+                gc_num = _extract_gc_with_doctr(crop, pdf_name, page_num, rotation)
                 if gc_num:
                     logger.info(f"[docTR] ✓ GC Number found at fixed position, rotation {rotation}°: {gc_num}")
                     return gc_num
@@ -238,27 +250,25 @@ def test_on_pdfs():
         print("\n❌ docTR is not installed. Install with: pip install python-doctr tensorflow-cpu")
         return
     
-    uploads_dir = r"c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\uploads"
-    output_file = r"c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\gc_doctr_results.txt"
-    
     # Get all PDFs in uploads folder
-    pdf_files = [f for f in os.listdir(uploads_dir) if f.lower().endswith('.pdf')]
+    pdf_files = [f for f in os.listdir(UPLOADS_DIR) if f.lower().endswith('.pdf')]
     
     print("\n" + "=" * 70)
-    print("Testing docTR OCR for GC Number Extraction")
+    print("Testing docTR OCR for GC Number Extraction (Linux Server)")
     print(f"Total PDFs found: {len(pdf_files)}")
-    print(f"Output file: {output_file}")
+    print(f"Uploads folder: {UPLOADS_DIR}")
+    print(f"Output file: {OUTPUT_FILE}")
     print("=" * 70)
     
     results = []
     all_output = []
     all_output.append("=" * 70)
-    all_output.append("docTR GC Number Extraction Results")
+    all_output.append("docTR GC Number Extraction Results (Linux Server)")
     all_output.append("=" * 70)
     all_output.append("")
     
     for pdf_idx, pdf_name in enumerate(sorted(pdf_files), 1):
-        pdf_path = os.path.join(uploads_dir, pdf_name)
+        pdf_path = os.path.join(UPLOADS_DIR, pdf_name)
         
         print(f"\n[{pdf_idx}/{len(pdf_files)}] 📄 Processing: {pdf_name}")
         all_output.append(f"\n[{pdf_idx}] PDF: {pdf_name}")
@@ -289,7 +299,7 @@ def test_on_pdfs():
                     print(f"  Page {page_num}: CONSIGNMENT page detected")
                     all_output.append(f"  Page {page_num}: CONSIGNMENT")
                     
-                    gc_number = extract_gc_with_doctr(page)
+                    gc_number = extract_gc_with_doctr(page, pdf_name, page_num)
                     
                     if gc_number:
                         print(f"    ✓ GC Number: {gc_number}")
@@ -333,10 +343,10 @@ def test_on_pdfs():
         all_output.append(line)
     
     # Save to file
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         f.write('\n'.join(all_output))
     
-    print(f"\n✓ Results saved to: {output_file}")
+    print(f"\n✓ Results saved to: {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
