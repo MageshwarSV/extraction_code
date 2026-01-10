@@ -2,7 +2,7 @@
 import sys
 sys.path.insert(0, r'c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy')
 
-from engine.extractors.client1_format3 import extract_format3_data
+from engine.extractors.client2_format2 import extract_format3_data
 
 pdf_path = r"c:\Users\avin4\Desktop\wbai_doc_extractor_engine-maincopy\DocScanner 23-Dec-2025 05-02 PM.pdf"
 

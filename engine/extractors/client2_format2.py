@@ -102,18 +102,23 @@ def cleanup_debug_crops():
 # -------------------------
 
 def clean_trailing_noise(text):
-    """Strip noise and unwanted artifacts from the end of the extracted name."""
+    """Strip noise and unwanted artifacts from the start and end of the extracted name."""
     if not text:
         return text
     text = text.strip()
     
-    # 1. Strip non-alphanumeric trailing characters (symbols)
-    text = re.sub(r'[^a-zA-Z0-9)\]]+$', '', text).strip()
+    # Symbols to strip from start/end (including space combinations)
+    # Symbols: !@#$%^&*()`~_+-={}[]:";'<>,.?|
+    # Use regex to iteratively strip whitespace + symbols from ends
     
-    # 2. Handle cases like "COMPANY LIMITED x"
+    # Pattern: one or more of (whitespace OR these symbols) at start
+    text = re.sub(r'^[\s!@#$%^&*()`~_+\-={}[\]:";\'<>,.?|]+', '', text)
+    # Pattern: one or more of (whitespace OR these symbols) at end
+    text = re.sub(r'[\s!@#$%^&*()`~_+\-={}[\]:";\'<>,.?|]+$', '', text)
+    
+    # Handle cases like "COMPANY LIMITED x" or "COMPANY é" (trailing single char - ANY character)
     if len(text) > 3:
-        text = re.sub(r'\s+[a-z0-9]$', '', text).strip()
-        text = re.sub(r'\s+[xX]$', '', text).strip()
+        text = re.sub(r'\s+.$', '', text).strip()  # Remove space + any single char at end
         
     return text.strip()
 
@@ -212,7 +217,7 @@ def extract_consignee_format3(page_image, page_num=0, debug=False) -> str:
         # Precision crop coordinates relative to the remapped strip
         crop_y1, crop_y2 = 45, 110 # approx 65px height for one line
         crop_x1 = max(0, hx_start - int(hw * 0.15))
-        crop_x2 = min(search_area.shape[1], header_points[-1]['right'] + int(hw * 1.5))
+        crop_x2 = min(search_area.shape[1], header_points[-1]['right'] + int(hw * 3.5))
         
         precision_crop = straightened[crop_y1:crop_y2, crop_x1:crop_x2]
         
@@ -871,16 +876,16 @@ def extract_consignor_refined(text: str) -> str:
             for city_key, city_map in cities.items():
                 if city_key in line_upper or SequenceMatcher(None, line_upper, city_key).ratio() >= 0.5:
                     logger.info(f"[Consignor] Found {city_key} in line: {line.strip()}")
-                    return f"JSW CEMENT LIMITED {city_map}"
+                    return f"JSW CEMENT LTD-{city_map}"
             continue
             
     # Fallback: search whole text for the city near JSW
     for city_key, city_map in cities.items():
         if city_key in text.upper():
             logger.info(f"[Consignor] Found {city_key} via global search")
-            return f"JSW CEMENT LIMITED {city_map}"
+            return f"JSW CEMENT LTD-{city_map}"
             
-    return "JSW CEMENT LIMITED"
+    return "JSW CEMENT LTD"
 
 
 def extract_actual_weight_format3(page_image, page_num=0, debug=False) -> str:
@@ -1080,8 +1085,8 @@ def extract_eway_date_format3(page_image, page_num=0, debug=False) -> str:
     
     # Patterns with colon support (OCR sometimes reads . as :)
     patterns = [
-        r'E-?Way.*?Validity.*?(\d{12})\s*[\-–]\s*(\d{2}[\.\/\:]\d{2}[\.\/\:]\d{4})',
-        r'(\d{12})\s*[\-–]\s*(\d{2}[\.\/\:]\d{2}[\.\/\:]\d{4})',
+        r'E-?Way.*?Validity.*?(\d{12})\s*[-]\s*(\d{2}[\.\/\:]\d{2}[\.\/\:]\d{4})',
+        r'(\d{12})\s*[-]\s*(\d{2}[\.\/\:]\d{2}[\.\/\:]\d{4})',
         r'Validity.*?(\d{2}[\.\/\:]\d{2}[\.\/\:]\d{4})',
         r'E-?Way.*?No.*?(\d{2}[\.\/\:]\d{2}[\.\/\:]\d{4})'
     ]
@@ -1267,17 +1272,17 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
             
             # =============================================
             # STEP 1: TRY ALL 4 ROTATIONS TO DETECT CONSIGNMENT PAGE
-            # Order: 90° -> 0° -> 180° -> 270°
+            # Order: 90deg -> 0deg -> 180deg -> 270deg
             # Only if ALL rotations fail to find CONSIGNMENT, treat as INVOICE
             # =============================================
             
-            consignment_rotations = [90, 0, 180, 270]  # 90° is most common for consignment
+            consignment_rotations = [90, 0, 180, 270]  # 90deg is most common for consignment
             is_consignment = False
             consignment_rotation = None
             consignment_text = None
             
             for rotation_angle in consignment_rotations:
-                logger.info(f"[CONSIGNMENT CHECK] Page {page_num}: Trying rotation {rotation_angle}°")
+                logger.info(f"[CONSIGNMENT CHECK] Page {page_num}: Trying rotation {rotation_angle} deg")
                 
                 if rotation_angle == 0:
                     test_page = page
@@ -1288,7 +1293,7 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
                 
                 # Check for CONSIGNMENT NOTE indicators
                 if 'CONSIGNMENT' in test_text.upper() and 'NOTE' in test_text.upper():
-                    logger.info(f"[CONSIGNMENT FOUND] Page {page_num}: Detected CONSIGNMENT at rotation {rotation_angle}°")
+                    logger.info(f"[CONSIGNMENT FOUND] Page {page_num}: Detected CONSIGNMENT at rotation {rotation_angle} deg")
                     is_consignment = True
                     consignment_rotation = rotation_angle
                     consignment_text = test_text
@@ -1322,7 +1327,7 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
                         
                         gc_number = extract_gc_number_from_pdf_page(test_page)
                         if gc_number:
-                            logger.info(f"[GC FOUND] Page {page_num}: GC found at fallback rotation {fallback_rotation}°")
+                            logger.info(f"[GC FOUND] Page {page_num}: GC found at fallback rotation {fallback_rotation} deg")
                             break
                 
                 page_data["gc_number"] = gc_number
@@ -1338,7 +1343,7 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
                 
                 # =============================================
                 # ROTATION FALLBACK LOGIC FOR INVOICE PAGES
-                # Try rotations: 0° (deskew) -> 180° -> 270° -> 90°
+                # Try rotations: 0deg (deskew) -> 180deg -> 270deg -> 90deg
                 # Only return empty if ALL rotations fail
                 # =============================================
                 
@@ -1347,11 +1352,11 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
                 best_score = 0
                 
                 for rotation_angle in rotation_order:
-                    logger.info(f"[INFO] Page {page_num}: Trying rotation {rotation_angle}°")
+                    logger.info(f"[INFO] Page {page_num}: Trying rotation {rotation_angle} deg")
                     
                     # Apply rotation
                     if rotation_angle == 0:
-                        # Try deskew for 0° orientation
+                        # Try deskew for 0deg orientation
                         try:
                             page_rotated = deskew_and_enhance(page)
                         except Exception as e:
@@ -1364,7 +1369,7 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
                         try:
                             page_rotated = deskew_and_enhance(page_rotated)
                         except Exception as e:
-                            logger.warning(f"Deskew after rotation {rotation_angle}° failed: {e}")
+                            logger.warning(f"Deskew after rotation {rotation_angle} deg failed: {e}")
                     
                     # Run OCR - Using PSM 6 which is more stable for line-based extraction
                     text = pytesseract.image_to_string(page_rotated, config='--psm 6')
@@ -1388,12 +1393,12 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
                     if 'VEHICLE' in text.upper():
                         current_score += 1
                     
-                    logger.info(f"[INFO] Rotation {rotation_angle}°: Branch={branch_test}, Date={invoice_date_test}, Score={current_score}")
+                    logger.info(f"[INFO] Rotation {rotation_angle} deg: Branch={branch_test}, Date={invoice_date_test}, Score={current_score}")
                     
                     # If we found good extraction, use it
                     if branch_test and invoice_date_test:
                         # Perfect match - use this rotation
-                        logger.info(f"[SUCCESS] Found valid extraction at rotation {rotation_angle}°")
+                        logger.info(f"[SUCCESS] Found valid extraction at rotation {rotation_angle} deg")
                         best_extraction = {
                             'page': page_rotated,
                             'text': text,
@@ -1421,7 +1426,7 @@ def extract_format3_data(pdf_path: str, dpi: int = 300) -> Dict[str, Any]:
                     text = best_extraction['text']
                     branch = best_extraction['branch']
                     invoice_date = best_extraction['invoice_date']
-                    logger.info(f"[INFO] Using rotation {best_extraction['rotation']}° with score {best_score}")
+                    logger.info(f"[INFO] Using rotation {best_extraction['rotation']} deg with score {best_score}")
                 else:
                     # Fallback to original page with deskew
                     try:
@@ -1498,6 +1503,11 @@ def pair_invoice_consignment(pages: List[Dict[str, Any]]) -> List[Dict[str, Any]
     Match Invoice pages with their Consignment pages.
     Pages come in pairs: Invoice + Consignment (order may vary).
     Returns list of paired records with combined data.
+    
+    Field names match format2_mapping.json (database field names):
+    Branch, Date, ConsignmentNo, Source, Destination, Vehicle, EWayBillNo,
+    Consignor, Consignee, GSTType, Delivery Address, Invoice No, ContentName,
+    ActualWeight, E-WayBill ValidUpto, Invoice Date, E-Way Bill NO
     """
     invoices = [p for p in pages if p.get("type") == "INVOICE"]
     consignments = [p for p in pages if p.get("type") == "CONSIGNMENT"]
@@ -1507,24 +1517,27 @@ def pair_invoice_consignment(pages: List[Dict[str, Any]]) -> List[Dict[str, Any]
     # Simple sequential pairing: assume pages are ordered
     for i, inv in enumerate(invoices):
         record = {
-            # From Invoice page
-            "branch": inv.get("branch"),
-            "invoice_date": inv.get("invoice_date"),
-            "invoice_number": inv.get("invoice_number"),
-            "destination": inv.get("destination"),
-            "vehicle_no": inv.get("vehicle_no"),
-            "eway_bill_no": inv.get("eway_bill_no"),
-            "eway_date": inv.get("eway_date"),
-            "pan_no": inv.get("pan_no"),
-            "gst_no": inv.get("gst_no"),
-            "product_category": inv.get("product_category"),
-            "consignor": inv.get("consignor"),
-            "consignee": inv.get("consignee"),
-            "delivery_address": inv.get("delivery_address"),
-            "actual_weight": inv.get("actual_weight"),
+            # From Invoice page - Using database field names from format2_mapping.json
+            "Branch": inv.get("branch"),
+            "Source": inv.get("branch"),  # Same as Branch for consignor location
+            "Date": inv.get("invoice_date"),
+            "Invoice Date": inv.get("invoice_date"),
+            "Invoice No": inv.get("invoice_number"),
+            "Destination": inv.get("destination"),
+            "Vehicle": inv.get("vehicle_no"),
+            "EWayBillNo": inv.get("eway_bill_no"),
+            "E-Way Bill NO": inv.get("eway_bill_no"),
+            "E-WayBill ValidUpto": inv.get("eway_date"),
+            "E-Way Bill Date": inv.get("invoice_date"),
+            "GSTType": "Unregistered",
+            "ContentName": inv.get("product_category"),
+            "Consignor": inv.get("consignor"),
+            "Consignee": inv.get("consignee"),
+            "Delivery Address": inv.get("delivery_address"),
+            "ActualWeight": inv.get("actual_weight"),
             
             # From Consignment page (if available)
-            "gc_number": consignments[i].get("gc_number") if i < len(consignments) else None,
+            "ConsignmentNo": consignments[i].get("gc_number") if i < len(consignments) else None,
         }
         records.append(record)
     
@@ -1539,7 +1552,8 @@ def run(pdf_path: str) -> Dict[str, Any]:
     This function:
     1. Extracts all pages using extract_format3_data()
     2. Pairs Invoice + Consignment pages
-    3. Returns the FIRST record's raw_data (single invoice mode)
+    3. Applies data transformation from database mappings
+    4. Returns the FIRST record's raw_data (single invoice mode)
     """
     result = extract_format3_data(pdf_path)
     
@@ -1552,9 +1566,39 @@ def run(pdf_path: str) -> Dict[str, Any]:
     if not records:
         return {"error": "No valid Invoice+Consignment pairs found"}
     
-    # Return first record for single-invoice mode
-    # For multi-invoice PDFs, this can be extended to return all records
-    return records[0]
+    # Get first record for single-invoice mode
+    raw_data = records[0]
+    
+    # ============================================
+    # DATA TRANSFORMATION (Check database mappings)
+    # ============================================
+    logger.info("=" * 60)
+    logger.info("DATA TRANSFORMATION: Checking database mappings...")
+    logger.info("=" * 60)
+    
+    try:
+        from .data_transformation import transform_extracted_data
+        
+        transformation_result = transform_extracted_data(raw_data)
+        
+        if transformation_result["transformed"]:
+            logger.info("[OK] Data transformation completed:")
+            for change in transformation_result["changes"]:
+                logger.info(f"  * {change['field']}: '{change['from']}' -> '{change['to']}'")
+            # Update raw_data with transformed values
+            raw_data = transformation_result["data"]
+        else:
+            logger.info("[OK] No data transformations needed")
+    
+    except ImportError as e:
+        logger.warning("[WARN] Data transformation module not available: %s", e)
+        logger.warning("  Skipping data transformation step")
+    except Exception as e:
+        logger.error("[ERR] Data transformation failed: %s", e, exc_info=True)
+        logger.warning("  Returning original extracted data without transformation")
+    
+    # Return transformed (or original) data
+    return raw_data
 
 
 def save_results_to_txt(result: Dict[str, Any], output_path: str):

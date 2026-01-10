@@ -1,0 +1,20 @@
+{
+    "Branch": "Branch",
+    "Date": "Date",
+    "ConsignmentNo": "ConsignmentNo",
+    "Source": "Source",
+    "Destination": "Destination",
+    "Vehicle": "Vehicle",
+    "EWayBillNo": "EWayBillNo",
+    "Consignor": "Consignor",
+    "Consignee": "Consignee",
+    "GSTType": "GSTType",
+    "Delivery Address": "Delivery Address",
+    "Invoice No": "Invoice No",
+    "ContentName": "ContentName",
+    "ActualWeight": "ActualWeight",
+    "E-WayBill ValidUpto": "E-WayBill ValidUpto",
+    "Invoice Date": "Invoice Date",
+    "E-Way Bill Date": "E-Way Bill Date",
+    "E-Way Bill NO": "E-Way Bill NO"
+}

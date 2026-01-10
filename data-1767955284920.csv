@@ -1,0 +1,26 @@
+"column_name","data_type","is_nullable","column_default"
+"doc_id","integer","NO","nextval('doc_processing_log_doc_id_seq'::regclass)"
+"client_id","integer","NO",NULL
+"doc_format_id","integer","NO",NULL
+"doc_file_name","character varying","NO",NULL
+"uploaded_on","timestamp without time zone","YES","CURRENT_TIMESTAMP"
+"uploaded_by","character varying","YES",NULL
+"overall_status","character varying","YES","'In Progress'::character varying"
+"data_extraction_status","character varying","YES","'Not Started'::character varying"
+"erp_entry_status","character varying","YES","'Not Started'::character varying"
+"manual_review_status","character varying","YES","'Not Required'::character varying"
+"extracted_json","text","YES",NULL
+"corrected_json","text","YES",NULL
+"created_at","timestamp without time zone","YES","CURRENT_TIMESTAMP"
+"updated_at","timestamp with time zone","YES","now()"
+"saved_path","text","YES",NULL
+"file_data","bytea","YES",NULL
+"file_mime","text","YES",NULL
+"file_size","bigint","YES",NULL
+"vehicle_hire_status","character varying","YES","'Not Started'::character varying"
+"owned_market","character varying","YES",NULL
+"unloading_date","date","YES",NULL
+"data_extraction_start_time","timestamp without time zone","YES",NULL
+"data_extraction_end_time","timestamp without time zone","YES",NULL
+"erp_entry_start_time","timestamp without time zone","YES",NULL
+"erp_entry_end_time","timestamp without time zone","YES",NULL
